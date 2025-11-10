@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IOC CSV Builder — Check Point</title>
+<style>
+  :root{
+    --bg:#0b0f14; --fg:#e7eef7; --muted:#a8b3c2; --card:#111723; --line:#1b2430;
+    --acc:#3ba0ff; --acc2:#5bb6ff; --warn:#ffd479;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.35 system-ui,Segoe UI,Roboto,Inter,Arial}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  h1{font-size:22px;margin:12px 0 8px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0a121c;border:1px solid var(--line);color:var(--muted);font-size:12px;margin-left:8px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .col-6{grid-column:span 6} .col-12{grid-column:span 12}
+  @media (max-width:920px){ .col-6{grid-column:span 12} }
+  label{display:block;font-weight:600;margin:6px 0;color:var(--muted)}
+  input,select,textarea{width:100%;background:#0a121c;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px}
+  textarea{min-height:150px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row > *{flex:1 1 210px}
+  button{background:var(--acc);color:#04121f;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+  button:hover{background:var(--acc2)}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .warn{color:var(--warn);margin-top:6px}
+  .counter{font-size:12px;color:var(--muted);margin-top:4px}
+  .kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;background:#0a121c}
+  #preview{min-height:220px;font-family:ui-monospace,Consolas,monospace}
+  .hidden{display:none}
+  .footer{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>IOC CSV Builder <span class="pill">Check&nbsp;Point</span></h1>
+
+    <div class="grid">
+      <div class="card col-12">
+        <div class="row">
+          <div>
+            <label for="confidence">Confianza (CONFIDENCE)</label>
+            <select id="confidence">
+              <option>low</option><option selected>medium</option><option>high</option>
+            </select>
+          </div>
+          <div>
+            <label for="severity">Severidad (SEVERITY)</label>
+            <select id="severity">
+              <option>low</option><option selected>medium</option><option>high</option>
+            </select>
+          </div>
+          <div>
+            <label for="product">Producto/Blade (PRODUCT)</label>
+            <select id="product">
+              <option value="AV" selected>Anti-Virus (AV)</option>
+              <option value="ABOT">Anti-Bot (ABOT)</option>
+              <option value="IPS">IPS</option>
+              <option value="URLF">URL Filtering (URLF)</option>
+              <option value="FW">Firewall (FW)</option>
+              <option value="APPC">Application Control (APPC)</option>
+              <option value="TE">Threat Emulation (TE)</option>
+              <option value="TX">Threat Extraction (TX)</option>
+              <option value="DLP">Data Loss Prevention (DLP)</option>
+              <option value="ASPM">Anti-Spam (ASPM)</option>
+              <option value="HTTPSI">HTTPS Inspection (HTTPSI)</option>
+              <option value="IA">Identity Awareness (IA)</option>
+              <option value="VPN">VPN</option>
+              <option value="custom">Otro / Personalizado…</option>
+            </select>
+            <input id="productCustom" class="hidden" type="text" placeholder="Escribe tu propio blade" style="margin-top:6px">
+          </div>
+          <div>
+            <label for="comment">Comentario (COMMENT)</label>
+            <input id="comment" placeholder="IOCs_YYYYMMDD o fuente">
+          </div>
+        </div>
+        <div class="hint">Pega tus indicadores abajo. Si la descarga es bloqueada, usa <b>Abrir en pestaña</b> y guarda con <b>Ctrl+S</b>.</div>
+        <div class="warn" id="warn" aria-live="polite"></div>
+      </div>
+
+      <div class="card col-6">
+        <label for="ips">IPs (una por línea)</label>
+        <textarea id="ips" placeholder="83.150.218.93&#10;203
