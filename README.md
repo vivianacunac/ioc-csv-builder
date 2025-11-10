@@ -1,4 +1,4 @@
-# IOC CSV Builder — Check Point
+# IOC CSV Builder — CheckPoint R81.20
 
 Una herramienta 100 % local y gratuita para generar archivos **CSV** compatibles con los **Indicators of Compromise (IOC)** de CheckPoint.  
 Desarrollada para automatizar la creación de archivos importables en el **IOC Management** de SmartConsole.
