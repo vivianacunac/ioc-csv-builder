@@ -282,47 +282,57 @@
   }
 
   function generate(){
-    try{
-      warn.textContent="";
-      const C=(conf.value||"medium").toLowerCase();
-      const S=(sev.value||"medium").toLowerCase();
-      const P=(prod.value==="custom" ? (prodCustom.value||"CUSTOM") : (prod.value||"AV")).toUpperCase();
-      const CM=comment.value||new Date().toISOString().slice(0,10);
+  try{
+    warn.textContent="";
+    const C=(conf.value||"medium").toLowerCase();
+    const S=(sev.value||"medium").toLowerCase();
+    const P=(prod.value==="custom" ? (prodCustom.value||"CUSTOM") : (prod.value||"AV")).toUpperCase();
+    // Sugerencia: evitar comas en COMMENT para no desalinear columnas
+    const CM=(comment.value||new Date().toISOString().slice(0,10)).replace(/,/g," ");
 
-      let data=[];
-      parseIPs().forEach(v=>data.push(["IP",v]));
-      parseURLs().forEach(v=>data.push(["URL",v]));
-      parseDomains().forEach(v=>data.push(["DOMAIN",v]));
-      parseHashes().forEach(([t,v])=>data.push([t,v]));
+    let data=[];
+    parseIPs().forEach(v=>data.push(["IP",v]));
+    parseURLs().forEach(v=>data.push(["URL",v]));
+    parseDomains().forEach(v=>data.push(["DOMAIN",v]));
+    parseHashes().forEach(([t,v])=>data.push([t,v]));
 
-      if(data.length===0){
-        warn.textContent="No hay datos. Ingresa al menos una IP/URL/dominio/hash.";
-        preview.value=""; enableActions(false); $("rowsCount").textContent="0 filas";
-        return;
-      }
-
-      if(dedup.value==="yes"){
-        const seen=new Set();
-        data=data.filter(([t,v])=>{const k=t+"|"+v.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true;});
-      }
-
-      const rows=[["UNIQ-NAME","VALUE","TYPE","CONFIDENCE","SEVERITY","PRODUCT","COMMENT"]];
-      let idx=1;
-      data.forEach(([type,value])=>{
-        const name=(nameMode.value==="hash")?`${(namePrefix.value||"observ")}_${type.toLowerCase()}_${hashCode(value)}`:`${namePrefix.value||"observ"}${idx++}`;
-        rows.push([name,value,type,C,S,P,CM]);
-      });
-
-      const csv=rows.map(r=>r.map(csvEscape).join(",")).join("\n");
-      preview.value=csv;
-      $("rowsCount").textContent=(rows.length-1)+" filas";
-      enableActions(true);
-    }catch(err){
-      console.error(err);
-      warn.textContent="Error generando CSV: "+(err && err.message ? err.message : err);
-      enableActions(false);
+    if(data.length===0){
+      warn.textContent="No hay datos. Ingresa al menos una IP/URL/dominio/hash.";
+      preview.value=""; enableActions(false); $("rowsCount").textContent="0 filas";
+      return;
     }
+
+    if(dedup.value==="yes"){
+      const seen=new Set();
+      data=data.filter(([t,v])=>{
+        const k=t+"|"+v.toLowerCase();
+        if(seen.has(k)) return false;
+        seen.add(k); 
+        return true;
+      });
+    }
+
+    // Construye filas SIN encabezado y SIN comillas
+    let idx=1;
+    const rows = data.map(([type,value])=>{
+      const name = (nameMode.value==="hash")
+        ? `${(namePrefix.value||"observ")}_${type.toLowerCase()}_${hashCode(value)}`
+        : `${namePrefix.value||"observ"}${idx++}`;
+      // IMPORTANTE: no poner comillas; separar por coma
+      // Orden: UNIQ-NAME,VALUE,TYPE,CONFIDENCE,SEVERITY,PRODUCT,COMMENT
+      return [name, value, type, C, S, P, CM].join(",");
+    });
+
+    const csv = rows.join("\n");          // sin cabecera
+    preview.value = csv;
+    $("rowsCount").textContent = rows.length + " filas";
+    enableActions(true);
+  }catch(err){
+    console.error(err);
+    warn.textContent="Error generando CSV: "+(err && err.message ? err.message : err);
+    enableActions(false);
   }
+}
 
   gen.addEventListener("click", generate);
   document.addEventListener("keydown",(e)=>{ if(e.ctrlKey && e.key==="Enter"){ generate(); }});
