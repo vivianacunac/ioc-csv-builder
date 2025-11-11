@@ -1,44 +1,94 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IOC CSV Builder — Check Point</title>
 <style>
   :root{
-    --bg:#0b0f14; --fg:#e7eef7; --muted:#a8b3c2; --card:#111723; --line:#1b2430;
-    --acc:#3ba0ff; --acc2:#5bb6ff; --warn:#ffd479;
+    --bg:#0b0f14; --card:#0f141c; --glass:rgba(255,255,255,.04);
+    --fg:#e7eef7; --muted:#a8b3c2; --line:#1c2633;
+    --acc:#3ba0ff; --acc2:#5bb6ff; --ok:#00d27a; --warn:#ffd479; --err:#ff5c5c;
+    --shadow: 0 8px 24px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.03) inset;
+    --radius:14px;
+  }
+  [data-theme="light"]{
+    --bg:#f7f9fc; --card:#ffffff; --glass:rgba(0,0,0,.035);
+    --fg:#0c1624; --muted:#5a6b7e; --line:#e6ecf3;
+    --shadow: 0 10px 30px rgba(18,32,57,.08), 0 1px 0 rgba(255,255,255,.9) inset;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.35 system-ui,Segoe UI,Roboto,Inter,Arial}
-  .wrap{max-width:1100px;margin:0 auto;padding:16px}
-  h1{font-size:22px;margin:12px 0 8px}
-  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0a121c;border:1px solid var(--line);color:var(--muted);font-size:12px;margin-left:8px}
-  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.4 Inter,system-ui,Segoe UI,Roboto,Arial}
+  a{color:var(--acc);text-decoration:none}
+  .wrap{max-width:1150px;margin:0 auto;padding:18px}
+  .hero{
+    border-radius:24px; padding:22px; margin:6px 0 18px;
+    background: linear-gradient(135deg, rgba(59,160,255,.15), rgba(0,210,122,.10));
+    border:1px solid var(--line); box-shadow:var(--shadow)
+  }
+  .hero h1{margin:0 0 6px; font-size:26px; letter-spacing:.2px}
+  .sub{color:var(--muted); margin:6px 0 0}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--line);
+    padding:6px 10px;border-radius:999px;font-size:12px;margin-right:8px}
+  .theme{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);backdrop-filter:saturate(1.2) blur(6px)}
   .col-6{grid-column:span 6} .col-12{grid-column:span 12}
-  @media (max-width:920px){ .col-6{grid-column:span 12} }
-  label{display:block;font-weight:600;margin:6px 0;color:var(--muted)}
-  input,select,textarea{width:100%;background:#0a121c;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px}
+  @media (max-width:980px){ .col-6{grid-column:span 12} }
+  label{display:block;font-weight:650;margin:6px 0;color:var(--muted);letter-spacing:.2px}
+  input,select,textarea{
+    width:100%;background:linear-gradient(180deg, var(--glass), transparent);
+    color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:12px 12px;
+    outline:none; transition:.15s border, .15s box-shadow
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--acc); box-shadow:0 0 0 3px rgba(59,160,255,.18)}
   textarea{min-height:150px;resize:vertical}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
-  .row > *{flex:1 1 210px}
-  button{background:var(--acc);color:#04121f;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-  button:hover{background:var(--acc2)}
-  button:disabled{opacity:.55;cursor:not-allowed}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>*{flex:1 1 230px}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--acc); color:#001221; border:0; border-radius:12px;
+    padding:12px 16px; font-weight:750; cursor:pointer; transition:transform .05s ease, background .15s
+  }
+  .btn:hover{background:var(--acc2)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .btn.ok{background:var(--ok); color:#001611}
+  .btn:disabled{opacity:.5; cursor:not-allowed}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .badge{font-size:12px;color:var(--muted);border:1px dashed var(--line);padding:4px 8px;border-radius:999px;background:var(--glass)}
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
   .warn{color:var(--warn);margin-top:6px}
-  .counter{font-size:12px;color:var(--muted);margin-top:4px}
-  .kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;background:#0a121c}
-  #preview{min-height:220px;font-family:ui-monospace,Consolas,monospace}
+  .counter{font-size:12px;color:var(--muted);margin-top:6px}
+  #preview{min-height:230px;font-family:ui-monospace,Consolas,monospace}
   .hidden{display:none}
-  .footer{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
+  .footer{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
+  .toast{
+    position:fixed; right:18px; bottom:18px; background:var(--card); border:1px solid var(--line);
+    padding:12px 14px; border-radius:12px; box-shadow:var(--shadow);
+    opacity:0; transform:translateY(8px); transition:.2s; pointer-events:none
+  }
+  .toast.show{opacity:1; transform:translateY(0)}
+  .switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+  .switch input{appearance:none; width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;transition:.15s}
+  .switch input:checked{background:linear-gradient(90deg,var(--acc),var(--ok))}
+  .switch input::after{content:""; position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.15s}
+  .switch input:checked::after{left:21px}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>IOC CSV Builder <span class="pill">Check&nbsp;Point</span></h1>
+    <div class="hero" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <h1 style="margin-right:auto">IOC CSV Builder</h1>
+      <div class="chip">Check Point format</div>
+      <label class="switch theme">
+        <span>Light / Dark</span>
+        <input id="toggleTheme" type="checkbox">
+      </label>
+      <div class="sub col-12" style="flex-basis:100%">Genera CSVs compatibles con IOC Management (UNIQ-NAME, VALUE, TYPE, CONFIDENCE, SEVERITY, PRODUCT, COMMENT)</div>
+    </div>
 
     <div class="grid">
       <div class="card col-12">
@@ -80,32 +130,34 @@
             <input id="comment" placeholder="IOCs_YYYYMMDD o fuente">
           </div>
         </div>
-        <div class="hint">Pega tus indicadores abajo. Si la descarga es bloqueada, usa <b>Abrir en pestaña</b> y guarda con <b>Ctrl+S</b>.</div>
+        <div class="badges">
+          <div class="badge" id="ipsBadge">0 IPs</div>
+          <div class="badge" id="domainsBadge">0 dominios</div>
+          <div class="badge" id="urlsBadge">0 URLs</div>
+          <div class="badge" id="hashesBadge">0 hashes</div>
+        </div>
+        <div class="hint">Si tu navegador bloquea la descarga, usa <b>Abrir en pestaña</b> y guarda con <b>Ctrl+S</b>.</div>
         <div class="warn" id="warn" aria-live="polite"></div>
       </div>
 
       <div class="card col-6">
         <label for="ips">IPs (una por línea)</label>
         <textarea id="ips" placeholder="83.150.218.93&#10;203.0.113.10"></textarea>
-        <div class="counter" id="ipsCount">0 IPs</div>
       </div>
 
       <div class="card col-6">
         <label for="domains">Dominios</label>
         <textarea id="domains" placeholder="malicioso.com&#10;phish-login.net"></textarea>
-        <div class="counter" id="domainsCount">0 dominios</div>
       </div>
 
       <div class="card col-6">
         <label for="urls">URLs</label>
         <textarea id="urls" placeholder="http://malicioso.com/malware.exe&#10;https://phish-login.net/portal/index.html"></textarea>
-        <div class="counter" id="urlsCount">0 URLs</div>
       </div>
 
       <div class="card col-6">
         <label for="hashes">Hashes (MD5 y/o SHA256)</label>
         <textarea id="hashes" placeholder="d41d8cd98f00b204e9800998ecf8427e&#10;a3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42"></textarea>
-        <div class="counter" id="hashesCount">0 hashes</div>
       </div>
 
       <div class="card col-12">
@@ -129,14 +181,14 @@
             </select>
           </div>
         </div>
-        <div class="row" style="margin-top:8px">
-          <button id="gen">Generar CSV</button>
-          <button id="copy" disabled>Copiar</button>
-          <button id="download" disabled>Descargar CSV</button>
-          <button id="open" disabled>Abrir en pestaña</button>
-          <button id="demo">Cargar ejemplo</button>
+        <div class="actions" style="margin-top:10px">
+          <button class="btn" id="gen">Generar CSV</button>
+          <button class="btn ghost" id="copy" disabled>Copiar</button>
+          <button class="btn" id="download" disabled>Descargar CSV</button>
+          <button class="btn ghost" id="open" disabled>Abrir en pestaña</button>
+          <button class="btn ok" id="demo">Cargar ejemplo</button>
         </div>
-        <div class="hint">Atajo: <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> para generar.</div>
+        <div class="hint">Atajo: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> para generar.</div>
       </div>
 
       <div class="card col-12">
@@ -146,27 +198,43 @@
       </div>
     </div>
 
-    <div class="footer">Hecho con cariño para importar IOCs en Check Point 💙</div>
+    <div class="footer">Hecho con cariño para importar IOCs en Check Point 💙 — Tema <span id="themeName">Dark</span></div>
   </div>
+
+  <div id="toast" class="toast">¡Copiado al portapapeles!</div>
 
 <script>
 (function(){
   const $ = (id)=>document.getElementById(id);
+  // campos
   const ips=$("ips"), domains=$("domains"), urls=$("urls"), hashes=$("hashes");
   const conf=$("confidence"), sev=$("severity"), prod=$("product"), prodCustom=$("productCustom"), comment=$("comment");
   const namePrefix=$("namePrefix"), nameMode=$("nameMode"), dedup=$("dedup");
   const preview=$("preview"), gen=$("gen"), copyBtn=$("copy"), dl=$("download"), openBtn=$("open"), demo=$("demo"), warn=$("warn");
+  const ipsB=$("ipsBadge"), domB=$("domainsBadge"), urlB=$("urlsBadge"), hsB=$("hashesBadge");
+  const themeToggle=$("toggleTheme"), themeName=$("themeName"), toast=$("toast");
 
-  // Regex correctos (UNA sola barra invertida)
+  // Regex (una sola barra invertida)
   const ipRe = /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g;
   const sha256Re = /\b[a-f0-9]{64}\b/gi;
   const md5Re = /\b[a-f0-9]{32}\b/gi;
   const urlRe = /\bhttps?:\/\/[^\s<>()"']+\b/gi;
   const domainRe = /\b(?=.{1,253}\b)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}\b/gi;
 
+  // Theme
+  const saved = localStorage.getItem("ioc-theme") || "dark";
+  document.documentElement.setAttribute("data-theme", saved);
+  themeToggle.checked = (saved === "light");
+  themeName.textContent = saved === "light" ? "Light" : "Dark";
+  themeToggle.addEventListener("change", ()=>{
+    const mode = themeToggle.checked ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", mode);
+    themeName.textContent = mode === "light" ? "Light" : "Dark";
+    localStorage.setItem("ioc-theme", mode);
+  });
+
   prod.addEventListener("change",()=>{ prodCustom.classList.toggle("hidden", prod.value!=="custom"); });
 
-  // Split por salto de línea real \n
   function normalizeLines(text){
     return (text||"").replace(/\r/g,"").split("\n").map(s=>s.trim()).filter(Boolean);
   }
@@ -191,16 +259,26 @@
   }
 
   function updateCounters(){
-    $("ipsCount").textContent = parseIPs().length+" IPs";
-    $("domainsCount").textContent = parseDomains().length+" dominios";
-    $("urlsCount").textContent = parseURLs().length+" URLs";
-    $("hashesCount").textContent = parseHashes().length+" hashes";
+    const ipC = parseIPs().length;
+    const dmC = parseDomains().length;
+    const urC = parseURLs().length;
+    const haC = parseHashes().length;
+    ipsB.textContent = `${ipC} IP${ipC===1?"":"s"}`;
+    domB.textContent = `${dmC} dominio${dmC===1?"":"s"}`;
+    urlB.textContent = `${urC} URL${urC===1?"":"s"}`;
+    hsB.textContent = `${haC} hash${haC===1?"":"es"}`;
   }
   [ips,domains,urls,hashes].forEach(el=>el.addEventListener("input", updateCounters));
   updateCounters();
 
   function enableActions(ok){
     copyBtn.disabled = !ok; dl.disabled = !ok; openBtn.disabled = !ok;
+  }
+
+  function toastMsg(msg){
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"), 1200);
   }
 
   function generate(){
@@ -251,8 +329,7 @@
 
   copyBtn.addEventListener("click",()=>{
     if(!preview.value){ warn.textContent="Genera el CSV primero."; return; }
-    preview.select(); document.execCommand("copy");
-    copyBtn.textContent="¡Copiado!"; setTimeout(()=>copyBtn.textContent="Copiar",1200);
+    preview.select(); document.execCommand("copy"); toastMsg("¡Copiado!");
   });
 
   dl.addEventListener("click",()=>{
@@ -267,6 +344,7 @@
       a.click();
       setTimeout(()=>URL.revokeObjectURL(a.href),4000);
       a.remove();
+      toastMsg("CSV descargado");
     }catch(err){
       console.error(err);
       warn.textContent="Descarga bloqueada por el navegador. Usa 'Abrir en pestaña'.";
@@ -285,9 +363,9 @@
     urls.value="http://malicioso.com/malware.exe\nhttps://phish-login.net/portal/index.html";
     hashes.value="d41d8cd98f00b204e9800998ecf8427e\na3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
     updateCounters();
+    toastMsg("Ejemplo cargado");
   });
 })();
 </script>
 </body>
 </html>
-
