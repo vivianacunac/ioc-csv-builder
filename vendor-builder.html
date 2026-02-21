@@ -3,211 +3,371 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Generador IoC (Vendor)</title>
+  <title>Generador de bloqueos IoC</title>
   <style>
-    :root { --b:#111; --muted:#666; --bg:#fff; --card:#f6f7f9; --bd:#e3e6ea; }
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--b);margin:0}
-    header{padding:18px 20px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg)}
-    main{max-width:980px;margin:0 auto;padding:18px 20px 40px}
-    h1{margin:0;font-size:18px}
-    .hint{margin:6px 0 0;color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
-    @media (max-width:860px){ .grid{grid-template-columns:1fr} }
-    .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
-    label{display:block;font-weight:800;font-size:13px;margin-top:10px}
-    input,select,textarea{width:100%;padding:10px 12px;margin-top:6px;border:1px solid var(--bd);border-radius:10px;font-size:14px;background:#fff}
-    textarea{resize:vertical}
+    :root{
+      --bg:#0b0f19;
+      --card:#0f172a;
+      --text:#e6edf3;
+      --muted:#9aa4b2;
+      --bd:rgba(255,255,255,.08);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --accent:#7c3aed;
+      --ok:#22c55e;
+      --bad:#ef4444;
+      --warn:#f59e0b;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --card:#ffffff;
+        --text:#0b1220;
+        --muted:#5b6677;
+        --bd:rgba(15,23,42,.10);
+        --shadow: 0 14px 30px rgba(15,23,42,.08);
+        --accent:#6d28d9;
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(124,58,237,.22), transparent 55%),
+                  radial-gradient(900px 500px at 90% 10%, rgba(34,197,94,.14), transparent 45%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      position: sticky; top:0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,0));
+      border-bottom: 1px solid var(--bd);
+      padding: 18px 20px;
+      z-index: 5;
+    }
+    .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+    h1{margin:0;font-size:18px;letter-spacing:.2px}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .pill{
+      display:inline-flex;gap:8px;align-items:center;
+      margin-top:10px;
+      padding:6px 10px;
+      border:1px solid var(--bd);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(124,58,237,.15)}
+    main{padding:18px 0 44px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
+    label{
+      display:block;
+      margin-top: 10px;
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing:.25px;
+      text-transform: uppercase;
+    }
+    input, select, textarea{
+      width:100%;
+      padding: 11px 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--bd);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(124,58,237,.55);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.18);
+    }
+    textarea{resize:vertical;min-height:110px}
     .row{display:flex;gap:10px}
     .row > *{flex:1}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button{border:1px solid var(--bd);background:#fff;border-radius:12px;padding:10px 12px;font-weight:900;cursor:pointer}
-    button.primary{background:#111;color:#fff;border-color:#111}
-    button:disabled{opacity:.55;cursor:not-allowed}
-    pre{background:#0b0f19;color:#e6edf3;border-radius:14px;padding:14px;overflow:auto;white-space:pre-wrap;word-break:break-word;border:1px solid #111}
-    .ok{color:#0a7;font-weight:900}
-    .err{color:#c00;font-weight:900}
-    .small{font-size:12px;color:var(--muted)}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border-top:1px solid var(--bd);padding:8px 6px;font-size:13px;text-align:left}
-    th{color:#333}
-    code{background:#eef1f5;padding:2px 6px;border-radius:8px}
+    .hint{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top: 12px}
+    button{
+      border:1px solid var(--bd);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .12s ease, background .12s ease;
+    }
+    button:hover{transform: translateY(-1px);border-color: rgba(124,58,237,.35)}
+    button:active{transform: translateY(0)}
+    button.primary{
+      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(99,102,241,.85));
+      border-color: rgba(124,58,237,.65);
+    }
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    pre{
+      margin:0;
+      background: #060913;
+      border: 1px solid rgba(255,255,255,.10);
+      color: #e6edf3;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 300px;
+      font-family: var(--mono);
+      font-size: 12.8px;
+      line-height: 1.35;
+      overflow:auto;
+      white-space:pre-wrap;
+      word-break:break-word;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .note{margin-top: 10px;color: var(--muted);font-size: 12px;line-height: 1.35}
+    table{width:100%;border-collapse:collapse;margin-top: 10px}
+    th,td{border-top:1px solid var(--bd);padding: 8px 6px;font-size: 12.5px;text-align:left;color: var(--text)}
+    th{color:var(--muted);font-weight:900}
+    .toast{
+      position: fixed; right: 16px; bottom: 16px; max-width: 420px;
+      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--bd);
+      background: rgba(15,23,42,.92); color: var(--text); box-shadow: var(--shadow);
+      display:flex; gap:10px; align-items:flex-start;
+      transform: translateY(12px); opacity: 0; pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 10;
+    }
+    .toast.show{opacity:1;transform: translateY(0)}
+    .badge{width:10px;height:10px;border-radius:999px;margin-top:4px}
+    .badge.ok{background:var(--ok)}
+    .badge.bad{background:var(--bad)}
+    .badge.warn{background:var(--warn)}
+    .toast .t{font-weight:900}
+    .toast .m{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.25}
+    .codepill{display:inline-flex;gap:8px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--bd);color:var(--muted);font-size:12px}
+    .codepill code{font-family:var(--mono);font-size:12px}
   </style>
 </head>
+
 <body>
 <header>
-  <h1>Generador de bloqueos IoC (por vendor)</h1>
-  <p class="hint">
-    Público y “limpio”: no guarda datos de clientes ni nombres internos. Solo genera comandos/checklist para copiar y pegar.
-    Nombre del objeto: <code>AS_&lt;IP&gt;</code>.
-  </p>
+  <div class="wrap">
+    <h1>Generador de bloqueos IoC</h1>
+    <div class="sub">
+      Herramienta simple para agilizar procesos de bloqueos masivos: genera comandos/checklist listos para copiar y pegar.
+    </div>
+    <div class="pill"><span class="dot"></span> Nombre del objeto: <span class="codepill"><code>AS_&lt;IP&gt;</code></span></div>
+  </div>
 </header>
 
 <main>
-  <div class="grid">
-    <div class="card">
-      <h2 style="margin:0 0 6px;font-size:16px;">Datos</h2>
+  <div class="wrap">
+    <div class="grid">
 
-      <label>Vendor</label>
-      <select id="vendor">
-        <option value="fortigate">FortiGate</option>
-        <option value="paloalto">Palo Alto</option>
-        <option value="firepower">Firepower (FMC)</option>
-      </select>
+      <section class="card">
+        <h2>Datos</h2>
 
-      <div class="row">
-        <div>
-          <label>IP (IPv4)</label>
-          <input id="ip" placeholder="1.2.3.4" inputmode="decimal" />
+        <label>Vendor</label>
+        <select id="vendor">
+          <option value="fortigate">FortiGate</option>
+          <option value="paloalto">Palo Alto</option>
+          <option value="firepower">Firepower (FMC)</option>
+        </select>
+
+        <label>IPs (IPv4) — una por línea</label>
+        <textarea id="ips" placeholder="1.2.3.4&#10;5.6.7.8&#10;9.10.11.12"></textarea>
+        <div class="hint">Se ignoran líneas vacías y se eliminan duplicados.</div>
+
+        <label>Comentario</label>
+        <textarea id="comment" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
+
+        <label>Grupo de bloqueo</label>
+        <input id="group" placeholder="Ej: GRP_BLOCK_IOC / IOC_BLOCK / etc." />
+        <div class="hint">No se guarda en ningún lado. Lo escribes solo cuando lo usas.</div>
+
+        <div class="row" id="pa-extra" style="display:none;">
+          <div>
+            <label>VSYS</label>
+            <input id="vsys" value="vsys1" />
+          </div>
+          <div>
+            <label>¿Incluir commit?</label>
+            <select id="commit">
+              <option value="yes">Sí</option>
+              <option value="no">No</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label>Nombre (auto)</label>
-          <input id="name" readonly />
-        </div>
-      </div>
 
-      <label>Comentario (ticket + motivo)</label>
-      <textarea id="comment" rows="3" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
-
-      <div class="row">
-        <div>
-          <label>Grupo de bloqueo (lo escribes tú)</label>
-          <input id="group" placeholder="Ej: GRP_BLOCK_IOC / IOC_BLOCK / etc." />
-          <div class="small">Esto no expone nada: tú lo pones solo cuando lo uses.</div>
+        <div class="actions">
+          <button class="primary" id="gen">Generar</button>
+          <button id="copy" disabled>Copiar salida</button>
+          <button id="addlog" disabled>Agregar al registro</button>
+          <button id="dlcsv">Descargar registro CSV</button>
+          <button id="clearlog">Borrar registro</button>
         </div>
-        <div>
-          <label>Formato nombre</label>
-          <select id="namefmt">
-            <option value="dots">AS_1.2.3.4</option>
-            <option value="dashes">AS_1-2-3-4 (más compatible)</option>
-          </select>
-          <div class="small">Si tu CLI odia puntos en nombres, usa guiones.</div>
-        </div>
-      </div>
+      </section>
 
-      <div class="row" id="pa-extra" style="display:none;">
-        <div>
-          <label>VSYS (Palo Alto)</label>
-          <input id="vsys" value="vsys1" />
-          <div class="small">Si no aplica, déjalo en vsys1.</div>
-        </div>
-        <div>
-          <label>¿Incluir commit?</label>
-          <select id="commit">
-            <option value="yes">Sí</option>
-            <option value="no">No</option>
-          </select>
-          <div class="small">Si estás en ventana controlada, a veces prefieres no incluirlo.</div>
-        </div>
-      </div>
+      <section class="card">
+        <h2>Salida</h2>
+        <pre id="out">Elige vendor, pega las IPs (una por línea) + comentario + grupo y presiona “Generar”.</pre>
+        <div class="note">Firepower: sin API, lo más realista es checklist en FMC + Deploy.</div>
+      </section>
 
-      <div class="actions">
-        <button class="primary" id="gen">Generar</button>
-        <button id="copy" disabled>Copiar salida</button>
-        <button id="addlog" disabled>Agregar al registro</button>
-        <button id="dlcsv">Descargar registro CSV</button>
-        <button id="clearlog">Borrar registro</button>
-      </div>
-
-      <p id="status" class="small" style="margin-top:10px;"></p>
     </div>
 
-    <div class="card">
-      <h2 style="margin:0 0 6px;font-size:16px;">Salida</h2>
-      <pre id="out">Elige vendor, escribe IP + comentario + grupo, y presiona “Generar”.</pre>
-      <p class="small" style="margin-top:10px;">
-        Firepower: sin API, lo más realista es checklist en FMC + Deploy.
-      </p>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:14px;">
-    <h2 style="margin:0 0 6px;font-size:16px;">Registro local (solo en este navegador)</h2>
-    <p class="small" style="margin:0 0 6px;">No sube nada a internet. Sirve para evidencia rápida.</p>
-    <table>
-      <thead><tr><th>Fecha</th><th>Vendor</th><th>IP</th><th>Objeto</th><th>Grupo</th><th>Comentario</th></tr></thead>
-      <tbody id="log"></tbody>
-    </table>
+    <section class="card" style="margin-top:14px;">
+      <h2>Registro local (solo en este navegador)</h2>
+      <div class="sub">No sube nada a internet. Útil para evidencia rápida si quieres.</div>
+      <table>
+        <thead><tr><th>Fecha</th><th>Vendor</th><th>Cantidad</th><th>IPs</th><th>Grupo</th><th>Comentario</th></tr></thead>
+        <tbody id="log"></tbody>
+      </table>
+    </section>
   </div>
 </main>
 
+<div id="toast" class="toast" aria-live="polite">
+  <span id="badge" class="badge ok"></span>
+  <div>
+    <div id="toastTitle" class="t">OK</div>
+    <div id="toastMsg" class="m">—</div>
+  </div>
+</div>
+
 <script>
 const vendorEl = document.getElementById("vendor");
-const ipEl = document.getElementById("ip");
-const nameEl = document.getElementById("name");
+const ipsEl = document.getElementById("ips");
 const commentEl = document.getElementById("comment");
 const groupEl = document.getElementById("group");
 const outEl = document.getElementById("out");
-const statusEl = document.getElementById("status");
 const copyBtn = document.getElementById("copy");
 const addLogBtn = document.getElementById("addlog");
 const dlCsvBtn = document.getElementById("dlcsv");
 const clearLogBtn = document.getElementById("clearlog");
 const genBtn = document.getElementById("gen");
-const nameFmtEl = document.getElementById("namefmt");
 const paExtra = document.getElementById("pa-extra");
 const vsysEl = document.getElementById("vsys");
 const commitEl = document.getElementById("commit");
 const logTbody = document.getElementById("log");
 
-function setStatus(msg, ok=true){
-  statusEl.textContent = msg;
-  statusEl.className = ok ? "ok" : "err";
+const toastEl = document.getElementById("toast");
+const badgeEl = document.getElementById("badge");
+const toastTitleEl = document.getElementById("toastTitle");
+const toastMsgEl = document.getElementById("toastMsg");
+let toastTimer = null;
+
+function toast(type, title, msg){
+  badgeEl.className = "badge " + (type || "ok");
+  toastTitleEl.textContent = title;
+  toastMsgEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.classList.remove("show"), 2400);
 }
-function nowLocal(){
-  const d = new Date();
-  return d.toISOString().replace("T"," ").slice(0,19);
-}
+
 function isValidIPv4(ip){
   const m = ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);
   if(!m) return false;
   return ip.split(".").every(o => Number(o)>=0 && Number(o)<=255);
 }
-function objName(ip){
-  const base = ip.trim();
-  return (nameFmtEl.value==="dashes") ? ("AS_" + base.replaceAll(".","-")) : ("AS_" + base);
+
+function parseIPs(text){
+  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const seen = new Set();
+  const ips = [];
+  const bad = [];
+  for(const line of lines){
+    if(seen.has(line)) continue;
+    seen.add(line);
+    if(isValidIPv4(line)) ips.push(line);
+    else bad.push(line);
+  }
+  return { ips, bad };
 }
+
+function objName(ip){
+  return "AS_" + ip; // siempre con puntos (por diseño)
+}
+
 function escapeQuotes(s){ return (s||"").replaceAll('"','\\"'); }
 
-function genFortigate(ip, name, comment, group){
-  return `config firewall address
-    edit "${name}"
-        set subnet ${ip} 255.255.255.255
-        set comment "${escapeQuotes(comment)}"
-    next
-end
+function genFortigate(ips, comment, group){
+  const addrLines = [];
+  addrLines.push("config firewall address");
+  for(const ip of ips){
+    const name = objName(ip);
+    addrLines.push(`    edit "${name}"`);
+    addrLines.push(`        set subnet ${ip} 255.255.255.255`);
+    addrLines.push(`        set comment "${escapeQuotes(comment)}"`);
+    addrLines.push("    next");
+  }
+  addrLines.push("end");
 
-config firewall addrgrp
-    edit "${group}"
-        append member "${name}"
-    next
-end`;
+  const grpLines = [];
+  grpLines.push("");
+  grpLines.push("config firewall addrgrp");
+  grpLines.push(`    edit "${group}"`);
+  for(const ip of ips){
+    const name = objName(ip);
+    grpLines.push(`        append member "${name}"`);
+  }
+  grpLines.push("    next");
+  grpLines.push("end");
+
+  return addrLines.join("\n") + grpLines.join("\n");
 }
 
-function genPaloalto(ip, name, comment, group, vsys, doCommit){
-  const lines = [
-    `set vsys ${vsys} address ${name} ip-netmask ${ip}/32 description "${escapeQuotes(comment)}"`,
-    `set vsys ${vsys} address-group ${group} static ${name}`
-  ];
+function genPaloalto(ips, comment, group, vsys, doCommit){
+  const lines = [];
+  for(const ip of ips){
+    const name = objName(ip);
+    lines.push(`set vsys ${vsys} address ${name} ip-netmask ${ip}/32 description "${escapeQuotes(comment)}"`);
+  }
+  for(const ip of ips){
+    const name = objName(ip);
+    lines.push(`set vsys ${vsys} address-group ${group} static ${name}`);
+  }
   if(doCommit) lines.push("commit");
   return lines.join("\n");
 }
 
-function genFirepower(ip, name, comment, group){
-  return `FMC (manual):
-- Objects > Object Management > Network > Add > Host
-  Name: ${name}
-  Value: ${ip}
-  Description: ${comment}
-- Add to Network Group: ${group}
-- Deploy`;
+function genFirepower(ips, comment, group){
+  const lines = [];
+  lines.push("FMC (manual):");
+  lines.push("- Objects > Object Management > Network > Add > Host");
+  lines.push("  (repetir por cada IP)");
+  for(const ip of ips){
+    const name = objName(ip);
+    lines.push(`  • Name: ${name} | Value: ${ip} | Description: ${comment}`);
+  }
+  lines.push(`- Add to Network Group: ${group}`);
+  lines.push("- Deploy");
+  return lines.join("\n");
 }
 
-function refreshName(){
-  const ip = ipEl.value.trim();
-  nameEl.value = ip ? objName(ip) : "";
+function nowLocal(){
+  const d = new Date();
+  return d.toISOString().replace("T"," ").slice(0,19);
 }
-ipEl.addEventListener("input", refreshName);
-nameFmtEl.addEventListener("change", refreshName);
 
 vendorEl.addEventListener("change", () => {
   paExtra.style.display = (vendorEl.value==="paloalto") ? "" : "none";
@@ -215,24 +375,27 @@ vendorEl.addEventListener("change", () => {
 
 function build(){
   const vendor = vendorEl.value;
-  const ip = ipEl.value.trim();
-  const name = objName(ip);
+  const { ips, bad } = parseIPs(ipsEl.value);
   const comment = commentEl.value.trim();
   const group = groupEl.value.trim();
 
-  if(!ip || !comment || !group) throw new Error("Falta IP, comentario o grupo.");
-  if(!isValidIPv4(ip)) throw new Error("IP inválida (solo IPv4 en este generador).");
+  if(!ips.length) throw new Error("No hay IPs válidas para procesar.");
+  if(!comment || !group) throw new Error("Falta comentario o grupo de bloqueo.");
+  if(bad.length) {
+    // No bloqueamos por esto, pero avisamos (sin frenar)
+    toast("warn", "Aviso", `IPs inválidas ignoradas: ${bad.slice(0,5).join(", ")}${bad.length>5?" ...":""}`);
+  }
 
   let out = "";
   if(vendor==="fortigate"){
-    out = genFortigate(ip, name, comment, group);
+    out = genFortigate(ips, comment, group);
   } else if(vendor==="paloalto"){
-    out = genPaloalto(ip, name, comment, group, vsysEl.value.trim() || "vsys1", commitEl.value==="yes");
+    out = genPaloalto(ips, comment, group, (vsysEl.value.trim()||"vsys1"), commitEl.value==="yes");
   } else {
-    out = genFirepower(ip, name, comment, group);
+    out = genFirepower(ips, comment, group);
   }
 
-  return { out, row: { date: nowLocal(), vendor, ip, object:name, group, comment } };
+  return { out, row: { date: nowLocal(), vendor, count: ips.length, ips: ips.join(" "), group, comment } };
 }
 
 genBtn.addEventListener("click", () => {
@@ -241,26 +404,26 @@ genBtn.addEventListener("click", () => {
     outEl.textContent = out;
     copyBtn.disabled = false;
     addLogBtn.disabled = false;
-    setStatus("Generado ✅", true);
+    toast("ok", "Generado ✅", "Salida lista para copiar y pegar (masivo).");
   }catch(e){
     outEl.textContent = "—";
     copyBtn.disabled = true;
     addLogBtn.disabled = true;
-    setStatus(e.message, false);
+    toast("bad", "Error", e.message);
   }
 });
 
 copyBtn.addEventListener("click", async () => {
   try{
     await navigator.clipboard.writeText(outEl.textContent || "");
-    setStatus("Copiado ✅", true);
+    toast("ok", "Copiado ✅", "Listo, a pegar con confianza.");
   }catch{
-    setStatus("No pude copiar (permisos del navegador). Copia manual desde la caja.", false);
+    toast("warn", "Ojo", "El navegador no dejó copiar. Copia manual desde la caja.");
   }
 });
 
 // ---- Log local ----
-const LOG_KEY = "ioc_vendor_log_v1";
+const LOG_KEY = "ioc_vendor_log_v3";
 function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch{ return []; } }
 function saveLog(rows){ localStorage.setItem(LOG_KEY, JSON.stringify(rows)); }
 function renderLog(){
@@ -268,7 +431,7 @@ function renderLog(){
   logTbody.innerHTML = "";
   rows.slice().reverse().forEach(r => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.date}</td><td>${r.vendor}</td><td>${r.ip}</td><td>${r.object}</td><td>${r.group}</td><td>${r.comment}</td>`;
+    tr.innerHTML = `<td>${r.date}</td><td>${r.vendor}</td><td>${r.count}</td><td>${r.ips}</td><td>${r.group}</td><td>${r.comment}</td>`;
     logTbody.appendChild(tr);
   });
 }
@@ -281,14 +444,14 @@ addLogBtn.addEventListener("click", () => {
     rows.push(row);
     saveLog(rows);
     renderLog();
-    setStatus("Agregado al registro ✅", true);
+    toast("ok", "Registro ✅", "Agregado al registro local.");
   }catch(e){
-    setStatus(e.message, false);
+    toast("bad", "Error", e.message);
   }
 });
 
 function toCsv(rows){
-  const header = ["date","vendor","ip","object","group","comment"];
+  const header = ["date","vendor","count","ips","group","comment"];
   const esc = s => `"${String(s ?? "").replaceAll('"','""')}"`;
   const lines = [header.join(",")];
   for(const r of rows){
@@ -307,13 +470,14 @@ dlCsvBtn.addEventListener("click", () => {
   document.body.appendChild(a);
   a.click();
   a.remove();
+  toast("ok", "Descargado ✅", "CSV generado.");
 });
 
 clearLogBtn.addEventListener("click", () => {
   if(confirm("¿Borrar TODO el registro local de este navegador?")){
     saveLog([]);
     renderLog();
-    setStatus("Registro borrado.", true);
+    toast("ok", "Listo", "Registro borrado.");
   }
 });
 </script>
