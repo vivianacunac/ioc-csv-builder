@@ -1,14 +1,66 @@
-# IOC CSV Builder — CheckPoint R81.20
+# IOC Utility Suite
 
-Una herramienta 100 % local y gratuita para generar archivos **CSV** compatibles con los **Indicators of Compromise (IOC)** de CheckPoint.  
-Desarrollada para automatizar la creación de archivos importables en el **IOC Management** de SmartConsole.
+Repositorio con herramientas web simples para generar configuraciones relacionadas con IoC (Indicators of Compromise) en distintos fabricantes de firewall.
 
-👉 **Usa la app directamente:**  
-[https://vivianacunac.github.io/ioc-csv-builder/](https://vivianacunac.github.io/ioc-csv-builder/)
+⚠️ Estas herramientas **no ejecutan cambios automáticos**, solo generan texto para copiar y pegar manualmente en los equipos correspondientes.
 
 ---
 
-## 🧩 Funcionalidad
+## 🔹 Herramientas incluidas
 
-- Carga listas de **IPs**, **dominios**, **URLs** y **hashes (MD5/SHA256)**.  
-- Genera automáticamente un archivo CSV con los campos requeridos por Check Point
+### 1️⃣ Check Point IoC CSV Builder
+Genera archivos CSV con formato estructurado para carga masiva de indicadores en entornos Check Point.
+
+- Estandariza nombres
+- Permite agregar comentarios
+- Facilita importaciones ordenadas
+
+---
+
+### 2️⃣ Generador de CLI por Vendor
+Genera comandos manuales para:
+
+- 🟠 Palo Alto
+- 🟢 FortiGate
+- 🔵 Firepower (FMC – checklist)
+
+Permite ingresar:
+- IP
+- Comentario (ticket / motivo)
+- Grupo de bloqueo
+- Opciones de formato de nombre
+
+Entrega:
+- Comandos listos para copiar y pegar
+- Checklist cuando corresponde
+- Registro local opcional en el navegador
+
+---
+
+## 🎯 Objetivo
+
+Reducir errores manuales, estandarizar nombres y acelerar bloqueos sin necesidad de automatización directa ni integración con los firewalls.
+
+---
+
+## 🔐 Seguridad
+
+- No utiliza credenciales
+- No se conecta a dispositivos
+- No almacena información sensible en servidores
+- Solo genera texto localmente en el navegador
+
+---
+
+## 📌 Uso
+
+1. Acceder a la herramienta correspondiente.
+2. Completar los campos requeridos.
+3. Copiar el resultado generado.
+4. Aplicar manualmente en el firewall o consola de gestión.
+
+---
+
+## 📎 Licencia
+
+Uso libre con fines educativos y operativos.
