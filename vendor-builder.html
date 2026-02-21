@@ -108,6 +108,28 @@
       margin-top: 6px;
       line-height: 1.35;
     }
+    /* Arregla dropdown del <select> en dark/light */
+select{
+  background-color: rgba(255,255,255,.03);
+  color: var(--text);
+}
+
+/* Las opciones del dropdown (menú) */
+select option{
+  background-color: var(--card);
+  color: var(--text);
+}
+
+/* Cuando una opción está seleccionada / resaltada */
+select option:checked{
+  background-color: rgba(124,58,237,.45);
+  color: var(--text);
+}
+
+/* Mejora compatibilidad en algunos navegadores */
+select:focus{
+  outline: none;
+}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top: 12px}
     button{
       border:1px solid var(--bd);
