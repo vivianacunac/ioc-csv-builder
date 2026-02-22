@@ -46,7 +46,7 @@
       padding: 18px 20px;
       z-index: 5;
     }
-    .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+    .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
     h1{margin:0;font-size:18px;letter-spacing:.2px}
     .sub{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
     .pill{
@@ -60,13 +60,15 @@
     }
     .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(124,58,237,.15)}
     main{padding:18px 0 44px}
+
     .grid{
       display:grid;
       grid-template-columns: 1.05fr .95fr;
       gap: 14px;
       margin-top: 14px;
     }
-    @media (max-width: 920px){ .grid{grid-template-columns:1fr} }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--card);
       border: 1px solid var(--bd);
@@ -75,6 +77,7 @@
       padding: 14px;
     }
     .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
+
     label{
       display:block;
       margin-top: 10px;
@@ -84,7 +87,8 @@
       letter-spacing:.25px;
       text-transform: uppercase;
     }
-    input, textarea{
+
+    input, textarea, select{
       width:100%;
       padding: 11px 12px;
       margin-top: 6px;
@@ -95,19 +99,22 @@
       outline: none;
       font-size: 14px;
     }
-    input:focus, textarea:focus{
+    input:focus, textarea:focus, select:focus{
       border-color: rgba(124,58,237,.55);
       box-shadow: 0 0 0 4px rgba(124,58,237,.18);
     }
     textarea{resize:vertical;min-height:110px}
+
     .row{display:flex;gap:10px}
     .row > *{flex:1}
+
     .hint{
       font-size: 12px;
       color: var(--muted);
       margin-top: 6px;
       line-height: 1.35;
     }
+
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top: 12px}
     button{
       border:1px solid var(--bd);
@@ -124,6 +131,10 @@
     button.primary{
       background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(99,102,241,.85));
       border-color: rgba(124,58,237,.65);
+    }
+    button.success{
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(16,185,129,.85));
+      border-color: rgba(34,197,94,.65);
     }
     button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
@@ -170,11 +181,13 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
     .note{margin-top: 10px;color: var(--muted);font-size: 12px;line-height: 1.35}
+
     table{width:100%;border-collapse:collapse;margin-top: 10px}
     th,td{border-top:1px solid var(--bd);padding: 8px 6px;font-size: 12.5px;text-align:left;color: var(--text)}
     th{color:var(--muted);font-weight:900}
+
     .toast{
-      position: fixed; right: 16px; bottom: 16px; max-width: 520px;
+      position: fixed; right: 16px; bottom: 16px; max-width: 560px;
       padding: 10px 12px; border-radius: 14px; border: 1px solid var(--bd);
       background: rgba(15,23,42,.92); color: var(--text); box-shadow: var(--shadow);
       display:flex; gap:10px; align-items:flex-start;
@@ -189,8 +202,25 @@
     .badge.warn{background:var(--warn)}
     .toast .t{font-weight:900}
     .toast .m{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.25}
-    .codepill{display:inline-flex;gap:8px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--bd);color:var(--muted);font-size:12px}
-    .codepill code{font-family:var(--mono);font-size:12px}
+
+    /* Counter pills (Checkpoint) */
+    .counterbar{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .counter{
+      border:1px solid var(--bd);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:var(--muted);
+      background: rgba(255,255,255,.03);
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .counter b{color:var(--text)}
+    .mini{
+      font-size:12px; color:var(--muted);
+    }
   </style>
 </head>
 
@@ -199,9 +229,9 @@
   <div class="wrap">
     <h1>Generador de bloqueos IoC</h1>
     <div class="sub">
-      Herramienta simple para agilizar procesos de bloqueos masivos: genera comandos/checklist listos para copiar y pegar.
+      Herramienta simple para agilizar procesos de bloqueos masivos: genera comandos o CSV listos para copiar y usar.
     </div>
-    <div class="pill"><span class="dot"></span> Nombre del objeto: <span class="codepill"><code>AS_&lt;IP&gt;</code></span></div>
+    <div class="pill"><span class="dot"></span> Convención: <span class="mini"><b>AS_&lt;IP&gt;</b> para objetos IP</span></div>
   </div>
 </header>
 
@@ -216,48 +246,153 @@
         <div class="vendor-pills" id="vendor">
           <button type="button" class="pill-btn active" data-vendor="fortigate">FortiGate</button>
           <button type="button" class="pill-btn" data-vendor="paloalto">Palo Alto</button>
-          <button type="button" class="pill-btn" data-vendor="firepower">Firepower</button>
+          <button type="button" class="pill-btn" data-vendor="checkpoint">Check Point (AV CSV)</button>
         </div>
 
-        <label>IPs (IPv4) — una por línea</label>
-        <textarea id="ips" placeholder="1.2.3.4&#10;5.6.7.8&#10;9.10.11.12"></textarea>
-        <div class="hint">Se ignoran líneas vacías y se eliminan duplicados.</div>
+        <!-- FW mode (Forti/Palo) -->
+        <div id="fw-mode">
+          <label>IPs (IPv4) — una por línea</label>
+          <textarea id="ips" placeholder="1.2.3.4&#10;5.6.7.8&#10;9.10.11.12"></textarea>
+          <div class="hint">Se ignoran líneas vacías y se eliminan duplicados.</div>
 
-        <label>Comentario</label>
-        <textarea id="comment" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
+          <label>Comentario</label>
+          <textarea id="comment" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
 
-        <label>Grupo de bloqueo</label>
-        <input id="group" placeholder="Ej: GRP_BLOCK_IOC / IOC_BLOCK / etc." />
-        <div class="hint">No se guarda en ningún lado. Lo escribes solo cuando lo usas.</div>
+          <label>Grupo de bloqueo</label>
+          <input id="group" placeholder="Ej: GRP_BLOCK_IOC / IOC_BLOCK / etc." />
+          <div class="hint">No se guarda en ningún lado. Lo escribes solo cuando lo usas.</div>
 
-        <div class="row" id="pa-extra" style="display:none;">
-          <div>
-            <label>VSYS</label>
-            <input id="vsys" value="vsys1" />
-          </div>
-          <div>
-            <label>¿Incluir commit?</label>
-            <div class="vendor-pills" style="margin-top:6px">
-              <button type="button" class="pill-btn active" id="commitYes">Sí</button>
-              <button type="button" class="pill-btn" id="commitNo">No</button>
+          <div class="row" id="pa-extra" style="display:none;">
+            <div>
+              <label>VSYS</label>
+              <input id="vsys" value="vsys1" />
             </div>
-            <div class="hint">Si estás en ventana controlada, puedes dejarlo en “No”.</div>
+            <div>
+              <label>¿Incluir commit?</label>
+              <div class="vendor-pills" style="margin-top:6px">
+                <button type="button" class="pill-btn active" id="commitYes">Sí</button>
+                <button type="button" class="pill-btn" id="commitNo">No</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="genFw">Generar</button>
+            <button id="copyFw" disabled>Copiar salida</button>
           </div>
         </div>
 
-        <div class="actions">
-          <button class="primary" id="gen">Generar</button>
-          <button id="copy" disabled>Copiar salida</button>
-          <button id="addlog" disabled>Agregar al registro</button>
-          <button id="dlcsv">Descargar registro CSV</button>
-          <button id="clearlog">Borrar registro</button>
+        <!-- Check Point CSV mode -->
+        <div id="cp-mode" style="display:none;">
+          <div class="row">
+            <div>
+              <label>Confianza (Confidence)</label>
+              <select id="cpConfidence">
+                <option value="low">low</option>
+                <option value="medium" selected>medium</option>
+                <option value="high">high</option>
+              </select>
+            </div>
+            <div>
+              <label>Severidad (Severity)</label>
+              <select id="cpSeverity">
+                <option value="low">low</option>
+                <option value="medium" selected>medium</option>
+                <option value="high">high</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Producto/Blade (Product)</label>
+              <select id="cpProduct">
+                <option value="AV" selected>Anti-Virus (AV)</option>
+                <option value="IPS">IPS</option>
+                <option value="AB">Anti-Bot (AB)</option>
+              </select>
+            </div>
+            <div>
+              <label>Comentario (Comment)</label>
+              <input id="cpComment" placeholder="IOCs_YYYYMMDD o fuente" />
+            </div>
+          </div>
+
+          <div class="counterbar">
+            <span class="counter"><b id="nIp">0</b> IP</span>
+            <span class="counter"><b id="nDom">0</b> dominios</span>
+            <span class="counter"><b id="nUrl">0</b> URLs</span>
+            <span class="counter"><b id="nHash">0</b> hashes</span>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div>
+              <label>IPs</label>
+              <textarea id="cpIps" placeholder="83.44.55.66"></textarea>
+            </div>
+            <div>
+              <label>Dominios</label>
+              <textarea id="cpDomains" placeholder="malicioso.com&#10;phish-login.net"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>URLs</label>
+              <textarea id="cpUrls" placeholder="http://malicioso.com/malware.exe"></textarea>
+            </div>
+            <div>
+              <label>Hashes (MD5 y/o SHA256)</label>
+              <textarea id="cpHashes" placeholder="d41d8cd98f00b204e9800998ecf8427e&#10;a3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Prefijo para UNIQ-NAME</label>
+              <input id="cpPrefix" value="observ" />
+            </div>
+            <div>
+              <label>Generación de UNIQ-NAME</label>
+              <select id="cpUniqMode">
+                <option value="seq" selected>Secuencial (observ1, observ2...)</option>
+                <option value="ioc">Basado en IoC (observ_&lt;ioc&gt;)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Eliminar duplicados</label>
+              <select id="cpDedupe">
+                <option value="yes" selected>Sí (recomendado)</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div>
+              <label>Formato de salida</label>
+              <select id="cpFormat">
+                <option value="csv" selected>CSV (una línea por IoC)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="genCp">Generar CSV</button>
+            <button id="copyCp" disabled>Copiar</button>
+            <button id="dlCp" disabled>Descargar CSV</button>
+            <button id="openCp" disabled>Abrir en pestaña</button>
+            <button class="success" id="sampleCp">Cargar ejemplo</button>
+          </div>
+
+          <div class="hint">Atajo: <b>Ctrl + Enter</b> para generar.</div>
         </div>
       </section>
 
       <section class="card">
         <h2>Salida</h2>
-        <pre id="out">Elige vendor, pega las IPs (una por línea) + comentario + grupo y presiona “Generar”.</pre>
-        <div class="note">Firepower: sin API, lo más realista es checklist en FMC + Deploy.</div>
+        <pre id="out">Elige vendor y genera la salida.</pre>
+        <div class="note" id="note"></div>
       </section>
 
     </div>
@@ -266,7 +401,7 @@
       <h2>Registro local (solo en este navegador)</h2>
       <div class="sub">No sube nada a internet. Útil para evidencia rápida si quieres.</div>
       <table>
-        <thead><tr><th>Fecha</th><th>Vendor</th><th>Cantidad</th><th>IPs</th><th>Grupo</th><th>Comentario</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Modo</th><th>Cantidad</th><th>Detalle</th></tr></thead>
         <tbody id="log"></tbody>
       </table>
     </section>
@@ -282,23 +417,7 @@
 </div>
 
 <script>
-  // ---------- UI refs ----------
-  const ipsEl = document.getElementById("ips");
-  const commentEl = document.getElementById("comment");
-  const groupEl = document.getElementById("group");
-  const outEl = document.getElementById("out");
-  const copyBtn = document.getElementById("copy");
-  const addLogBtn = document.getElementById("addlog");
-  const dlCsvBtn = document.getElementById("dlcsv");
-  const clearLogBtn = document.getElementById("clearlog");
-  const genBtn = document.getElementById("gen");
-
-  const paExtra = document.getElementById("pa-extra");
-  const vsysEl = document.getElementById("vsys");
-  const commitYesBtn = document.getElementById("commitYes");
-  const commitNoBtn = document.getElementById("commitNo");
-
-  // Toast
+  // ---------- Toast ----------
   const toastEl = document.getElementById("toast");
   const badgeEl = document.getElementById("badge");
   const toastTitleEl = document.getElementById("toastTitle");
@@ -314,20 +433,23 @@
     toastTimer = setTimeout(()=>toastEl.classList.remove("show"), 2400);
   }
 
-  // ---------- Vendor pills ----------
-  let vendorValue = "fortigate"; // default
-  const vendorButtons = document.querySelectorAll(".pill-btn[data-vendor]");
-  vendorButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      vendorButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      vendorValue = btn.dataset.vendor;
-      paExtra.style.display = (vendorValue==="paloalto") ? "" : "none";
-    });
-  });
+  // ---------- Common UI ----------
+  const outEl = document.getElementById("out");
+  const noteEl = document.getElementById("note");
 
-  // Commit pills
+  // Vendor
+  let vendorValue = "fortigate";
+  const vendorButtons = document.querySelectorAll(".pill-btn[data-vendor]");
+  const fwMode = document.getElementById("fw-mode");
+  const cpMode = document.getElementById("cp-mode");
+
+  // Palo extra
+  const paExtra = document.getElementById("pa-extra");
+  const vsysEl = document.getElementById("vsys");
+  const commitYesBtn = document.getElementById("commitYes");
+  const commitNoBtn = document.getElementById("commitNo");
   let doCommit = true;
+
   function setCommit(v){
     doCommit = v;
     if(v){ commitYesBtn.classList.add("active"); commitNoBtn.classList.remove("active"); }
@@ -337,18 +459,72 @@
   commitNoBtn.addEventListener("click", ()=>setCommit(false));
   setCommit(true);
 
+  function setVendor(v){
+    vendorValue = v;
+    // UI switch
+    const isCp = (v === "checkpoint");
+    fwMode.style.display = isCp ? "none" : "";
+    cpMode.style.display = isCp ? "" : "none";
+    paExtra.style.display = (v === "paloalto") ? "" : "none";
+
+    // Note
+    if(isCp){
+      noteEl.textContent = "Check Point: genera CSV de IoC (blade/product) para carga masiva.";
+      outEl.textContent = "Completa los campos y presiona “Generar CSV”.";
+      refreshCounters();
+    } else {
+      noteEl.textContent = "";
+      outEl.textContent = "Elige vendor y genera la salida.";
+    }
+  }
+
+  vendorButtons.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      vendorButtons.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      setVendor(btn.dataset.vendor);
+    });
+  });
+
   // ---------- Helpers ----------
+  function escapeQuotes(s){ return (s||"").replaceAll('"','""'); } // CSV-safe
+  function nowLocal(){
+    const d = new Date();
+    return d.toISOString().replace("T"," ").slice(0,19);
+  }
   function isValidIPv4(ip){
     const m = ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);
     if(!m) return false;
     return ip.split(".").every(o => Number(o)>=0 && Number(o)<=255);
   }
+  function parseLines(text){
+    return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  }
+  function dedupe(arr){
+    const seen = new Set();
+    const out = [];
+    for(const x of arr){
+      const k = x.toLowerCase();
+      if(seen.has(k)) continue;
+      seen.add(k);
+      out.push(x);
+    }
+    return out;
+  }
+  function objName(ip){ return "AS_" + ip; }
+
+  // ---------- FW MODE (Forti/Palo) ----------
+  const ipsEl = document.getElementById("ips");
+  const commentEl = document.getElementById("comment");
+  const groupEl = document.getElementById("group");
+  const genFwBtn = document.getElementById("genFw");
+  const copyFwBtn = document.getElementById("copyFw");
 
   function parseIPs(text){
-    const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-    const seen = new Set();
+    const lines = parseLines(text);
     const ips = [];
     const bad = [];
+    const seen = new Set();
     for(const line of lines){
       if(seen.has(line)) continue;
       seen.add(line);
@@ -358,18 +534,6 @@
     return { ips, bad };
   }
 
-  function objName(ip){
-    return "AS_" + ip; // puntos siempre
-  }
-
-  function escapeQuotes(s){ return (s||"").replaceAll('"','\\"'); }
-
-  function nowLocal(){
-    const d = new Date();
-    return d.toISOString().replace("T"," ").slice(0,19);
-  }
-
-  // ---------- Generators ----------
   function genFortigate(ips, comment, group){
     const addrLines = [];
     addrLines.push("config firewall address");
@@ -377,7 +541,7 @@
       const name = objName(ip);
       addrLines.push(`    edit "${name}"`);
       addrLines.push(`        set subnet ${ip} 255.255.255.255`);
-      addrLines.push(`        set comment "${escapeQuotes(comment)}"`);
+      addrLines.push(`        set comment "${comment.replaceAll('"','\\"')}"`);
       addrLines.push("    next");
     }
     addrLines.push("end");
@@ -400,7 +564,7 @@
     const lines = [];
     for(const ip of ips){
       const name = objName(ip);
-      lines.push(`set vsys ${vsys} address ${name} ip-netmask ${ip}/32 description "${escapeQuotes(comment)}"`);
+      lines.push(`set vsys ${vsys} address ${name} ip-netmask ${ip}/32 description "${comment.replaceAll('"','\\"')}"`);
     }
     for(const ip of ips){
       const name = objName(ip);
@@ -410,24 +574,10 @@
     return lines.join("\n");
   }
 
-  function genFirepower(ips, comment, group){
-    const lines = [];
-    lines.push("FMC (manual):");
-    lines.push("- Objects > Object Management > Network > Add > Host");
-    lines.push("  (repetir por cada IP)");
-    for(const ip of ips){
-      const name = objName(ip);
-      lines.push(`  • Name: ${name} | Value: ${ip} | Description: ${comment}`);
-    }
-    lines.push(`- Add to Network Group: ${group}`);
-    lines.push("- Deploy");
-    return lines.join("\n");
-  }
-
-  function build(){
+  function buildFw(){
     const { ips, bad } = parseIPs(ipsEl.value);
-    const comment = commentEl.value.trim();
-    const group = groupEl.value.trim();
+    const comment = (commentEl.value || "").trim();
+    const group = (groupEl.value || "").trim();
 
     if(!ips.length) throw new Error("No hay IPs válidas para procesar.");
     if(!comment || !group) throw new Error("Falta comentario o grupo de bloqueo.");
@@ -439,41 +589,232 @@
     let out = "";
     if(vendorValue==="fortigate"){
       out = genFortigate(ips, comment, group);
-    } else if(vendorValue==="paloalto"){
-      out = genPaloalto(ips, comment, group, (vsysEl.value.trim()||"vsys1"), doCommit);
     } else {
-      out = genFirepower(ips, comment, group);
+      out = genPaloalto(ips, comment, group, (vsysEl.value.trim()||"vsys1"), doCommit);
     }
-
-    return { out, row: { date: nowLocal(), vendor: vendorValue, count: ips.length, ips: ips.join(" "), group, comment } };
+    return { out, count: ips.length, detail: ips.join(" ") };
   }
 
-  genBtn.addEventListener("click", () => {
+  genFwBtn.addEventListener("click", ()=>{
     try{
-      const { out } = build();
+      if(vendorValue==="checkpoint"){
+        toast("warn","Ojo","Estás en modo Check Point. Usa “Generar CSV”.");
+        return;
+      }
+      const { out } = buildFw();
       outEl.textContent = out;
-      copyBtn.disabled = false;
-      addLogBtn.disabled = false;
-      toast("ok", "Generado ✅", "Salida lista para copiar y pegar (masivo).");
+      copyFwBtn.disabled = false;
+      toast("ok","Generado ✅","Salida lista para copiar/pegar.");
+      addLog(`FW:${vendorValue}`, out.split("\n").length, "Comandos generados");
     }catch(e){
       outEl.textContent = "—";
-      copyBtn.disabled = true;
-      addLogBtn.disabled = true;
-      toast("bad", "Error", e.message);
+      copyFwBtn.disabled = true;
+      toast("bad","Error", e.message);
     }
   });
 
-  copyBtn.addEventListener("click", async () => {
+  copyFwBtn.addEventListener("click", async ()=>{
     try{
       await navigator.clipboard.writeText(outEl.textContent || "");
-      toast("ok", "Copiado ✅", "Listo, a pegar con confianza.");
+      toast("ok","Copiado ✅","Listo.");
     }catch{
-      toast("warn", "Ojo", "El navegador no dejó copiar. Copia manual desde la caja.");
+      toast("warn","Ojo","El navegador no dejó copiar. Copia manual.");
     }
   });
 
-  // ---- Log local ----
-  const LOG_KEY = "ioc_vendor_log_v4";
+  // ---------- CHECK POINT CSV MODE ----------
+  const cpConfidence = document.getElementById("cpConfidence");
+  const cpSeverity   = document.getElementById("cpSeverity");
+  const cpProduct    = document.getElementById("cpProduct");
+  const cpComment    = document.getElementById("cpComment");
+
+  const cpIps     = document.getElementById("cpIps");
+  const cpDomains = document.getElementById("cpDomains");
+  const cpUrls    = document.getElementById("cpUrls");
+  const cpHashes  = document.getElementById("cpHashes");
+
+  const cpPrefix   = document.getElementById("cpPrefix");
+  const cpUniqMode = document.getElementById("cpUniqMode");
+  const cpDedupe   = document.getElementById("cpDedupe");
+
+  const nIp   = document.getElementById("nIp");
+  const nDom  = document.getElementById("nDom");
+  const nUrl  = document.getElementById("nUrl");
+  const nHash = document.getElementById("nHash");
+
+  const genCpBtn  = document.getElementById("genCp");
+  const copyCpBtn = document.getElementById("copyCp");
+  const dlCpBtn   = document.getElementById("dlCp");
+  const openCpBtn = document.getElementById("openCp");
+  const sampleCpBtn = document.getElementById("sampleCp");
+
+  function sanitizeForUniq(s){
+    return s.replaceAll("://","_")
+            .replaceAll("/","_")
+            .replaceAll(".","_")
+            .replaceAll(":","_")
+            .replaceAll("?","_")
+            .replaceAll("&","_")
+            .replaceAll("=","_")
+            .replaceAll("@","_")
+            .replaceAll("#","_")
+            .replaceAll("%","_")
+            .replaceAll("+","_")
+            .replaceAll(" ","_")
+            .replace(/[^a-zA-Z0-9_\-]/g, "_")
+            .slice(0,64);
+  }
+
+  function detectHashType(h){
+    const x = h.trim();
+    if(/^[a-fA-F0-9]{32}$/.test(x)) return "MD5";
+    if(/^[a-fA-F0-9]{64}$/.test(x)) return "SHA256";
+    return "HASH";
+  }
+
+  function refreshCounters(){
+    let ips = parseLines(cpIps.value);
+    let dom = parseLines(cpDomains.value);
+    let url = parseLines(cpUrls.value);
+    let hsh = parseLines(cpHashes.value);
+
+    if(cpDedupe.value==="yes"){
+      ips = dedupe(ips); dom = dedupe(dom); url = dedupe(url); hsh = dedupe(hsh);
+    }
+    nIp.textContent = String(ips.filter(isValidIPv4).length);
+    nDom.textContent = String(dom.length);
+    nUrl.textContent = String(url.length);
+    nHash.textContent = String(hsh.length);
+  }
+
+  [cpIps, cpDomains, cpUrls, cpHashes, cpDedupe].forEach(el=>{
+    el.addEventListener("input", refreshCounters);
+    el.addEventListener("change", refreshCounters);
+  });
+
+  function buildCheckpointCSV(){
+    const confidence = cpConfidence.value;
+    const severity   = cpSeverity.value;
+    const product    = cpProduct.value; // AV/IPS/AB
+    const comment    = (cpComment.value || "").trim() || `IOCs_${new Date().toISOString().slice(0,10)}`;
+
+    let ips = parseLines(cpIps.value).filter(isValidIPv4);
+    let dom = parseLines(cpDomains.value);
+    let url = parseLines(cpUrls.value);
+    let hsh = parseLines(cpHashes.value);
+
+    if(cpDedupe.value==="yes"){
+      ips = dedupe(ips); dom = dedupe(dom); url = dedupe(url); hsh = dedupe(hsh);
+    }
+
+    const rows = [];
+    const prefix = (cpPrefix.value || "ioc").trim() || "ioc";
+    let seq = 1;
+
+    function uniqNameFor(ioc){
+      if(cpUniqMode.value==="seq") return `${prefix}${seq++}`;
+      return `${prefix}_${sanitizeForUniq(ioc)}`;
+    }
+
+    // Column order based on your preview:
+    // UNIQ-NAME, IOC, TYPE, CONFIDENCE, SEVERITY, PRODUCT, COMMENT
+    function pushRow(ioc, type){
+      const uniq = uniqNameFor(ioc);
+      rows.push([uniq, ioc, type, confidence, severity, product, comment]);
+    }
+
+    ips.forEach(ip => pushRow(ip, "IP"));
+    dom.forEach(d  => pushRow(d, "DOMAIN"));
+    url.forEach(u  => pushRow(u, "URL"));
+    hsh.forEach(h  => pushRow(h, detectHashType(h))); // MD5/SHA256/HASH
+
+    if(!rows.length) throw new Error("No hay IoCs para generar CSV.");
+
+    // Build CSV text (no header, like your tool)
+    const csv = rows.map(r => r.map(v => `"${escapeQuotes(String(v))}"`).join(",")).join("\n");
+
+    return { csv, count: rows.length };
+  }
+
+  function downloadText(filename, text){
+    const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  genCpBtn.addEventListener("click", ()=>{
+    try{
+      if(vendorValue!=="checkpoint"){
+        toast("warn","Ojo","Estás en modo Firewall. Usa “Generar”.");
+        return;
+      }
+      const { csv, count } = buildCheckpointCSV();
+      outEl.textContent = csv;
+      copyCpBtn.disabled = false;
+      dlCpBtn.disabled = false;
+      openCpBtn.disabled = false;
+      toast("ok","CSV listo ✅", `${count} IoCs generados.`);
+      addLog("CP:CSV", count, "CSV generado");
+    }catch(e){
+      outEl.textContent = "—";
+      copyCpBtn.disabled = true;
+      dlCpBtn.disabled = true;
+      openCpBtn.disabled = true;
+      toast("bad","Error", e.message);
+    }
+  });
+
+  copyCpBtn.addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText(outEl.textContent || "");
+      toast("ok","Copiado ✅","CSV copiado al portapapeles.");
+    }catch{
+      toast("warn","Ojo","El navegador no dejó copiar. Copia manual.");
+    }
+  });
+
+  dlCpBtn.addEventListener("click", ()=>{
+    const name = `checkpoint_iocs_${new Date().toISOString().slice(0,10)}.csv`;
+    downloadText(name, outEl.textContent || "");
+    toast("ok","Descargado ✅", name);
+  });
+
+  openCpBtn.addEventListener("click", ()=>{
+    const w = window.open("", "_blank");
+    if(!w){
+      toast("warn","Ojo","Tu navegador bloqueó la pestaña. Permite popups o usa Descargar.");
+      return;
+    }
+    const esc = (outEl.textContent || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    w.document.write(`<pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${esc}</pre>`);
+    w.document.close();
+  });
+
+  sampleCpBtn.addEventListener("click", ()=>{
+    cpIps.value = "83.44.55.66";
+    cpDomains.value = "malicioso.com\nphish-login.net";
+    cpUrls.value = "http://malicioso.com/malware.exe\nhttps://phish-login.net/portal/index.html";
+    cpHashes.value = "d41d8cd98f00b204e9800998ecf8427e\na3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
+    cpPrefix.value = "observ";
+    cpComment.value = `IOCs_${new Date().toISOString().slice(0,10)}`;
+    refreshCounters();
+    toast("ok","Ejemplo cargado ✅","Listo para generar.");
+  });
+
+  // Ctrl+Enter to generate (in CP mode)
+  document.addEventListener("keydown", (e)=>{
+    if(e.ctrlKey && e.key === "Enter"){
+      if(vendorValue==="checkpoint") genCpBtn.click();
+      else genFwBtn.click();
+    }
+  });
+
+  // ---------- Local log ----------
+  const LOG_KEY = "ioc_suite_log_v1";
   const logTbody = document.getElementById("log");
 
   function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch{ return []; } }
@@ -481,57 +822,22 @@
   function renderLog(){
     const rows = loadLog();
     logTbody.innerHTML = "";
-    rows.slice().reverse().forEach(r => {
+    rows.slice().reverse().forEach(r=>{
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${r.date}</td><td>${r.vendor}</td><td>${r.count}</td><td>${r.ips}</td><td>${r.group}</td><td>${r.comment}</td>`;
+      tr.innerHTML = `<td>${r.date}</td><td>${r.mode}</td><td>${r.count}</td><td>${r.detail}</td>`;
       logTbody.appendChild(tr);
     });
   }
+  function addLog(mode, count, detail){
+    const rows = loadLog();
+    rows.push({ date: nowLocal(), mode, count, detail });
+    saveLog(rows);
+    renderLog();
+  }
   renderLog();
 
-  addLogBtn.addEventListener("click", () => {
-    try{
-      const { row } = build();
-      const rows = loadLog();
-      rows.push(row);
-      saveLog(rows);
-      renderLog();
-      toast("ok", "Registro ✅", "Agregado al registro local.");
-    }catch(e){
-      toast("bad", "Error", e.message);
-    }
-  });
-
-  function toCsv(rows){
-    const header = ["date","vendor","count","ips","group","comment"];
-    const esc = s => `"${String(s ?? "").replaceAll('"','""')}"`;
-    const lines = [header.join(",")];
-    for(const r of rows){
-      lines.push(header.map(h => esc(r[h])).join(","));
-    }
-    return lines.join("\n");
-  }
-
-  dlCsvBtn.addEventListener("click", () => {
-    const rows = loadLog();
-    const csv = toCsv(rows);
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `ioc_vendor_log_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    toast("ok", "Descargado ✅", "CSV generado.");
-  });
-
-  clearLogBtn.addEventListener("click", () => {
-    if(confirm("¿Borrar TODO el registro local de este navegador?")){
-      saveLog([]);
-      renderLog();
-      toast("ok", "Listo", "Registro borrado.");
-    }
-  });
+  // Init
+  setVendor("fortigate");
 </script>
 </body>
 </html>
