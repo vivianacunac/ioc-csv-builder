@@ -502,10 +502,18 @@
   // ---------- Helpers ----------
   function escapeQuotes(s){ return (s||"").replaceAll('"','""'); }
 
-  function nowLocal(){
-    const d = new Date();
-    return d.toISOString().replace("T"," ").slice(0,19);
-  }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+
+function nowLocal(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = pad2(d.getMonth() + 1);
+  const dd = pad2(d.getDate());
+  const hh = pad2(d.getHours());
+  const mi = pad2(d.getMinutes());
+  const ss = pad2(d.getSeconds());
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+}
 
   function normalizeIoc(s){
     return (s || "")
