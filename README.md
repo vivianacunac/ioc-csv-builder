@@ -10,18 +10,7 @@ Genera comandos manuales para:
 
 - 🟠 Palo Alto
 - 🟢 FortiGate
-- 🔵 Firepower (FMC – checklist)
-
-Permite ingresar:
-- IP
-- Comentario (ticket / motivo)
-- Grupo de bloqueo
-- Opciones de formato de nombre
-
-Entrega:
-- Comandos listos para copiar y pegar
-- Checklist cuando corresponde
-- Registro local opcional en el navegador
+- 🔵 Checkpoint
 
 ---
 
