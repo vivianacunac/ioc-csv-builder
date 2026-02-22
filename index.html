@@ -400,10 +400,20 @@ input, textarea, select {
     <section class="card" style="margin-top:14px;">
       <h2>Registro local (solo en este navegador)</h2>
       <div class="sub">No sube nada a internet. Útil para evidencia rápida si quieres.</div>
-      <table>
-        <thead><tr><th>Fecha</th><th>Modo</th><th>Cantidad</th><th>Detalle</th></tr></thead>
-        <tbody id="log"></tbody>
-      </table>
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Vendor</th>
+      <th>Tipo</th>
+      <th>IoC</th>
+      <th>Grupo</th>
+      <th>Comentario</th>
+      <th>Extra</th>
+    </tr>
+  </thead>
+  <tbody id="log"></tbody>
+</table>
     </section>
   </div>
 </main>
@@ -600,18 +610,25 @@ input, textarea, select {
       if(vendorValue==="checkpoint"){
         toast("warn","Ojo","Estás en modo Check Point. Usa “Generar CSV”.");
         return;
-      }
-      const { out } = buildFw();
-      outEl.textContent = out;
-      copyFwBtn.disabled = false;
-      toast("ok","Generado ✅","Salida lista para copiar/pegar.");
-      addLog(`FW:${vendorValue}`, out.split("\n").length, "Comandos generados");
-    }catch(e){
-      outEl.textContent = "—";
-      copyFwBtn.disabled = true;
-      toast("bad","Error", e.message);
-    }
+      const { ips } = parseIPs(ipsEl.value);
+const comment = (commentEl.value || "").trim();
+const group = (groupEl.value || "").trim();
+
+const extra =
+  vendorValue === "paloalto"
+    ? `vsys=${(vsysEl.value.trim()||"vsys1")} commit=${doCommit ? "yes" : "no"}`
+    : "—";
+
+ips.forEach(ip => {
+  addLogEntry({
+    vendor: vendorValue,
+    type: "IP",
+    ioc: ip,
+    group,
+    comment,
+    extra
   });
+});
 
   copyFwBtn.addEventListener("click", async ()=>{
     try{
@@ -752,21 +769,26 @@ input, textarea, select {
         toast("warn","Ojo","Estás en modo Firewall. Usa “Generar”.");
         return;
       }
-      const { csv, count } = buildCheckpointCSV();
-      outEl.textContent = csv;
-      copyCpBtn.disabled = false;
-      dlCpBtn.disabled = false;
-      openCpBtn.disabled = false;
-      toast("ok","CSV listo ✅", `${count} IoCs generados.`);
-      addLog("CP:CSV", count, "CSV generado");
-    }catch(e){
-      outEl.textContent = "—";
-      copyCpBtn.disabled = true;
-      dlCpBtn.disabled = true;
-      openCpBtn.disabled = true;
-      toast("bad","Error", e.message);
-    }
-  });
+const confidence = cpConfidence.value;
+const severity   = cpSeverity.value;
+const product    = cpProduct.value;
+const comment    = (cpComment.value || "").trim() || `IOCs_${new Date().toISOString().slice(0,10)}`;
+
+let ips = parseLines(cpIps.value).filter(isValidIPv4);
+let dom = parseLines(cpDomains.value);
+let url = parseLines(cpUrls.value);
+let hsh = parseLines(cpHashes.value);
+
+if(cpDedupe.value==="yes"){
+  ips = dedupe(ips); dom = dedupe(dom); url = dedupe(url); hsh = dedupe(hsh);
+}
+
+const extra = `product=${product} conf=${confidence} sev=${severity}`;
+
+ips.forEach(v => addLogEntry({ vendor: "checkpoint", type: "IP", ioc: v, group: "", comment, extra }));
+dom.forEach(v => addLogEntry({ vendor: "checkpoint", type: "DOMAIN", ioc: v, group: "", comment, extra }));
+url.forEach(v => addLogEntry({ vendor: "checkpoint", type: "URL", ioc: v, group: "", comment, extra }));
+hsh.forEach(v => addLogEntry({ vendor: "checkpoint", type: detectHashType(v), ioc: v, group: "", comment, extra }));
 
   copyCpBtn.addEventListener("click", async ()=>{
     try{
@@ -813,28 +835,70 @@ input, textarea, select {
     }
   });
 
-  // ---------- Local log ----------
-  const LOG_KEY = "ioc_suite_log_v1";
-  const logTbody = document.getElementById("log");
+/ ---------- Local log (mejorado) ----------
+const LOG_KEY = "ioc_suite_log_v2";
+const logTbody = document.getElementById("log");
 
-  function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch{ return []; } }
-  function saveLog(rows){ localStorage.setItem(LOG_KEY, JSON.stringify(rows)); }
-  function renderLog(){
-    const rows = loadLog();
-    logTbody.innerHTML = "";
-    rows.slice().reverse().forEach(r=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${r.date}</td><td>${r.mode}</td><td>${r.count}</td><td>${r.detail}</td>`;
-      logTbody.appendChild(tr);
-    });
-  }
-  function addLog(mode, count, detail){
-    const rows = loadLog();
-    rows.push({ date: nowLocal(), mode, count, detail });
-    saveLog(rows);
-    renderLog();
-  }
+function nowLocal(){
+  const d = new Date();
+  return d.toISOString().replace("T"," ").slice(0,19);
+}
+
+function loadLog(){
+  try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); }
+  catch{ return []; }
+}
+
+function saveLog(rows){
+  localStorage.setItem(LOG_KEY, JSON.stringify(rows));
+}
+
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+
+function renderLog(){
+  const rows = loadLog();
+  logTbody.innerHTML = "";
+
+  // Últimos 300 para que no se te vuelva un SIEM casero eterno
+  rows.slice(-300).reverse().forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(r.date)}</td>
+      <td>${escapeHtml(r.vendor)}</td>
+      <td>${escapeHtml(r.type)}</td>
+      <td style="font-family:var(--mono)">${escapeHtml(r.ioc)}</td>
+      <td>${escapeHtml(r.group || "—")}</td>
+      <td>${escapeHtml(r.comment || "—")}</td>
+      <td>${escapeHtml(r.extra || "—")}</td>
+    `;
+    logTbody.appendChild(tr);
+  });
+}
+
+// Agrega una fila por IoC (IP/DOMAIN/URL/HASH)
+function addLogEntry({ vendor, type, ioc, group, comment, extra }){
+  const rows = loadLog();
+  rows.push({
+    date: nowLocal(),
+    vendor: vendor || "—",
+    type: type || "—",
+    ioc: ioc || "—",
+    group: group || "",
+    comment: comment || "",
+    extra: extra || ""
+  });
+  saveLog(rows);
   renderLog();
+}
+
+renderLog();
 
   // Init
   setVendor("fortigate");
