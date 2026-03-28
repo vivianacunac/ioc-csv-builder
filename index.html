@@ -18,7 +18,7 @@
       --bad:#ef4444;
       --warn:#f59e0b;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      color-scheme: dark; /* ayuda a que controles nativos no se vean blancos */
+      color-scheme: dark;
     }
     @media (prefers-color-scheme: light){
       :root{
@@ -62,7 +62,6 @@
     }
     .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(124,58,237,.15)}
     main{padding:18px 0 44px}
-
     .grid{
       display:grid;
       grid-template-columns: 1.05fr .95fr;
@@ -70,7 +69,6 @@
       margin-top: 14px;
     }
     @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--card);
       border: 1px solid var(--bd);
@@ -79,7 +77,6 @@
       padding: 14px;
     }
     .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
-
     label{
       display:block;
       margin-top: 10px;
@@ -89,7 +86,6 @@
       letter-spacing:.25px;
       text-transform: uppercase;
     }
-
     input, textarea, select{
       width:100%;
       padding: 11px 12px;
@@ -105,23 +101,11 @@
       border-color: rgba(124,58,237,.55);
       box-shadow: 0 0 0 4px rgba(124,58,237,.18);
     }
-    /* Nota: algunos navegadores no aplican esto en options, pero ayuda cuando sí */
-    select option{
-      background:#111827;
-      color: var(--text);
-    }
+    select option{ background:#111827; color: var(--text); }
     textarea{resize:vertical;min-height:110px}
-
     .row{display:flex;gap:10px}
     .row > *{flex:1}
-
-    .hint{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 6px;
-      line-height: 1.35;
-    }
-
+    .hint{ font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top: 12px}
     button{
       border:1px solid var(--bd);
@@ -144,13 +128,7 @@
       border-color: rgba(34,197,94,.65);
     }
     button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
-    .vendor-pills{
-      display:flex;
-      gap:10px;
-      margin-top:6px;
-      flex-wrap:wrap;
-    }
+    .vendor-pills{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
     .pill-btn{
       border:1px solid var(--bd);
       background: rgba(255,255,255,.04);
@@ -161,15 +139,11 @@
       cursor:pointer;
       transition: all .15s ease;
     }
-    .pill-btn:hover{
-      border-color: rgba(124,58,237,.45);
-      transform: translateY(-1px);
-    }
+    .pill-btn:hover{ border-color: rgba(124,58,237,.45); transform: translateY(-1px); }
     .pill-btn.active{
       background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(99,102,241,.85));
       border-color: rgba(124,58,237,.65);
     }
-
     pre{
       margin:0;
       background: #060913;
@@ -187,11 +161,9 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
     }
     .note{margin-top: 10px;color: var(--muted);font-size: 12px;line-height: 1.35}
-
     table{width:100%;border-collapse:collapse;margin-top: 10px}
     th,td{border-top:1px solid var(--bd);padding: 8px 6px;font-size: 12.5px;text-align:left;color: var(--text);vertical-align:top}
     th{color:var(--muted);font-weight:900}
-
     .toast{
       position: fixed; right: 16px; bottom: 16px; max-width: 560px;
       padding: 10px 12px; border-radius: 14px; border: 1px solid var(--bd);
@@ -208,24 +180,78 @@
     .badge.warn{background:var(--warn)}
     .toast .t{font-weight:900}
     .toast .m{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.25}
-
-    .counterbar{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:10px;
-    }
+    .counterbar{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
     .counter{
-      border:1px solid var(--bd);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      color:var(--muted);
-      background: rgba(255,255,255,.03);
+      border:1px solid var(--bd); border-radius:999px; padding:6px 10px; font-size:12px;
+      color:var(--muted); background: rgba(255,255,255,.03);
       display:inline-flex; align-items:center; gap:8px;
     }
     .counter b{color:var(--text)}
-    .mini{
-      font-size:12px; color:var(--muted);
+    .mini{ font-size:12px; color:var(--muted); }
+
+    /* ── Formateador IoCs ── */
+    .section-divider{
+      display:flex; align-items:center; gap:12px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .5px;
     }
+    .section-divider::before, .section-divider::after{
+      content:""; flex:1; height:1px; background: var(--bd);
+    }
+    .ioc-tools-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 980px){ .ioc-tools-grid{grid-template-columns:1fr} }
+    .ioc-tool-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)), var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .ioc-tool-card h3{ margin: 0 0 4px; font-size: 14px; letter-spacing: .2px; }
+    .ioc-tool-card .desc{
+      font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.4;
+    }
+    .ioc-tool-card .example{
+      font-size: 11.5px; color: var(--muted); font-family: var(--mono);
+      background: rgba(255,255,255,.03); border: 1px solid var(--bd);
+      border-radius: 8px; padding: 7px 10px; margin-top: 8px; line-height: 1.7;
+    }
+    .ioc-tool-card .example .arrow{ color: var(--accent); }
+    .ioc-tool-card textarea{ min-height: 130px; }
+    .ioc-output{
+      margin-top: 10px;
+      background: #060913;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      min-height: 60px;
+      color: #e6edf3;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: auto;
+      display: none;
+    }
+    .ioc-counter{
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .ioc-counter b{ color: var(--text); }
   </style>
 </head>
 
@@ -254,11 +280,10 @@
           <button type="button" class="pill-btn" data-vendor="checkpoint">Check Point (AV CSV)</button>
         </div>
 
-        <!-- FW mode (Forti/Palo) -->
         <div id="fw-mode">
           <label>IPs (IPv4) — una por línea</label>
           <textarea id="ips" placeholder="1.2.3.4&#10;5.6.7.8&#10;9.10.11.12"></textarea>
-          <div class="hint">Acepta formatos “defang” como <b>104[.]28.212.115</b> y elimina duplicados.</div>
+          <div class="hint">Acepta formatos "defang" como <b>104[.]28.212.115</b> y elimina duplicados.</div>
 
           <label>Comentario</label>
           <textarea id="comment" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
@@ -273,9 +298,9 @@
               <input id="vsys" value="vsys1" />
             </div>
             <div>
-              <label>¿Incluir commit?</label>
+              <label>Incluir commit?</label>
               <div class="vendor-pills" style="margin-top:6px">
-                <button type="button" class="pill-btn active" id="commitYes">Sí</button>
+                <button type="button" class="pill-btn active" id="commitYes">Si</button>
                 <button type="button" class="pill-btn" id="commitNo">No</button>
               </div>
             </div>
@@ -287,7 +312,6 @@
           </div>
         </div>
 
-        <!-- Check Point CSV mode -->
         <div id="cp-mode" style="display:none;">
           <div class="row">
             <div>
@@ -307,7 +331,6 @@
               </select>
             </div>
           </div>
-
           <div class="row">
             <div>
               <label>Producto/Blade (Product)</label>
@@ -322,14 +345,12 @@
               <input id="cpComment" placeholder="IOCs_YYYYMMDD o fuente" />
             </div>
           </div>
-
           <div class="counterbar">
             <span class="counter"><b id="nIp">0</b> IP</span>
             <span class="counter"><b id="nDom">0</b> dominios</span>
             <span class="counter"><b id="nUrl">0</b> URLs</span>
             <span class="counter"><b id="nHash">0</b> hashes</span>
           </div>
-
           <div class="row" style="margin-top:10px">
             <div>
               <label>IPs</label>
@@ -340,7 +361,6 @@
               <textarea id="cpDomains" placeholder="malicioso.com&#10;phish-login.net"></textarea>
             </div>
           </div>
-
           <div class="row">
             <div>
               <label>URLs</label>
@@ -351,45 +371,41 @@
               <textarea id="cpHashes" placeholder="d41d8cd98f00b204e9800998ecf8427e&#10;a3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42"></textarea>
             </div>
           </div>
-
           <div class="row">
             <div>
               <label>Prefijo para UNIQ-NAME</label>
               <input id="cpPrefix" value="observ" />
             </div>
             <div>
-              <label>Generación de UNIQ-NAME</label>
+              <label>Generacion de UNIQ-NAME</label>
               <select id="cpUniqMode">
                 <option value="seq" selected>Secuencial (observ1, observ2...)</option>
                 <option value="ioc">Basado en IoC (observ_&lt;ioc&gt;)</option>
               </select>
             </div>
           </div>
-
           <div class="row">
             <div>
               <label>Eliminar duplicados</label>
               <select id="cpDedupe">
-                <option value="yes" selected>Sí (recomendado)</option>
+                <option value="yes" selected>Si (recomendado)</option>
                 <option value="no">No</option>
               </select>
             </div>
             <div>
               <label>Formato de salida</label>
               <select id="cpFormat">
-                <option value="csv" selected>CSV (una línea por IoC)</option>
+                <option value="csv" selected>CSV (una linea por IoC)</option>
               </select>
             </div>
           </div>
-
           <div class="actions">
             <button class="primary" id="genCp">Generar CSV</button>
             <button id="copyCp" disabled>Copiar</button>
             <button id="dlCp" disabled>Descargar CSV</button>
-            <button id="openCp" disabled>Abrir en pestaña</button>
+            <button id="openCp" disabled>Abrir en pestana</button>
             <button class="success" id="sampleCp">Cargar ejemplo</button>
           </div>
-
           <div class="hint">Atajo: <b>Ctrl + Enter</b> para generar.</div>
         </div>
       </section>
@@ -402,20 +418,73 @@
 
     </div>
 
+    <!-- NUEVA SECCION: Formateador de IoCs -->
+    <div class="section-divider">Formateador de IoCs</div>
+
+    <div class="ioc-tools-grid">
+
+      <!-- Herramienta 1: Defang cleaner -->
+      <div class="ioc-tool-card">
+        <h3>Eliminar corchetes (Defang &rarr; Clean)</h3>
+        <div class="desc">
+          Limpia notacion defang de dominios, IPs y URLs. Reemplaza <code>[.]</code> por <code>.</code> y normaliza esquemas <code>hxxp</code>.
+        </div>
+        <div class="example">
+          <code>104[.]28[.]212[.]115</code> <span class="arrow">&rarr;</span> <code>104.28.212.115</code><br>
+          <code>hxxps://malware[.]com/path</code> <span class="arrow">&rarr;</span> <code>https://malware.com/path</code>
+        </div>
+
+        <label>IoCs con corchetes &mdash; uno por linea</label>
+        <textarea id="defangInput" placeholder="104[.]28[.]212[.]115&#10;hxxps://malware[.]com/path&#10;evil[.]domain[.]net"></textarea>
+
+        <div class="actions">
+          <button class="primary" id="defangBtn">Limpiar</button>
+          <button id="defangCopy" disabled>Copiar resultado</button>
+          <button id="defangClear">Limpiar campos</button>
+        </div>
+
+        <div class="ioc-counter" id="defangCounter">
+          <b id="defangCount">0</b> IoCs procesados
+        </div>
+        <div class="ioc-output" id="defangOutput"></div>
+      </div>
+
+      <!-- Herramienta 2: Wildcard formatter -->
+      <div class="ioc-tool-card">
+        <h3>Formateador de Wildcards</h3>
+        <div class="desc">
+          Convierte wildcards en formato defang al formato correcto para FortiGate. Elimina el punto entre <code>*</code> y el dominio, quita corchetes y agrega <code>*</code> al final.
+        </div>
+        <div class="example">
+          <code>*.gestioncurso[.]cl</code> <span class="arrow">&rarr;</span> <code>*gestioncurso.cl*</code><br>
+          <code>*.goodvibrationsmusic[.]co[.]uk</code> <span class="arrow">&rarr;</span> <code>*goodvibrationsmusic.co.uk*</code>
+        </div>
+
+        <label>Wildcards &mdash; una por linea</label>
+        <textarea id="wildcardInput" placeholder="*.gestioncurso[.]cl&#10;*.goodvibrationsmusic[.]co[.]uk&#10;*.mail[.]gw"></textarea>
+
+        <div class="actions">
+          <button class="primary" id="wildcardBtn">Formatear</button>
+          <button id="wildcardCopy" disabled>Copiar resultado</button>
+          <button id="wildcardClear">Limpiar campos</button>
+        </div>
+
+        <div class="ioc-counter" id="wildcardCounter">
+          <b id="wildcardCount">0</b> wildcards procesadas
+        </div>
+        <div class="ioc-output" id="wildcardOutput"></div>
+      </div>
+
+    </div>
+
     <section class="card" style="margin-top:14px;">
       <h2>Registro local (solo en este navegador)</h2>
-      <div class="sub">No sube nada a internet. Útil para evidencia rápida si quieres.</div>
-
+      <div class="sub">No sube nada a internet. Util para evidencia rapida si quieres.</div>
       <table>
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Vendor</th>
-            <th>Tipo</th>
-            <th>IoC</th>
-            <th>Grupo</th>
-            <th>Comentario</th>
-            <th>Extra</th>
+            <th>Fecha</th><th>Vendor</th><th>Tipo</th><th>IoC</th>
+            <th>Grupo</th><th>Comentario</th><th>Extra</th>
           </tr>
         </thead>
         <tbody id="log"></tbody>
@@ -428,7 +497,7 @@
   <span id="badge" class="badge ok"></span>
   <div>
     <div id="toastTitle" class="t">OK</div>
-    <div id="toastMsg" class="m">—</div>
+    <div id="toastMsg" class="m">-</div>
   </div>
 </div>
 
@@ -439,7 +508,6 @@
   const toastTitleEl = document.getElementById("toastTitle");
   const toastMsgEl = document.getElementById("toastMsg");
   let toastTimer = null;
-
   function toast(type, title, msg){
     badgeEl.className = "badge " + (type || "ok");
     toastTitleEl.textContent = title;
@@ -452,14 +520,10 @@
   // ---------- Common UI ----------
   const outEl = document.getElementById("out");
   const noteEl = document.getElementById("note");
-
-  // Vendor
   let vendorValue = "fortigate";
   const vendorButtons = document.querySelectorAll(".pill-btn[data-vendor]");
   const fwMode = document.getElementById("fw-mode");
   const cpMode = document.getElementById("cp-mode");
-
-  // Palo extra
   const paExtra = document.getElementById("pa-extra");
   const vsysEl = document.getElementById("vsys");
   const commitYesBtn = document.getElementById("commitYes");
@@ -481,10 +545,9 @@
     fwMode.style.display = isCp ? "none" : "";
     cpMode.style.display = isCp ? "" : "none";
     paExtra.style.display = (v === "paloalto") ? "" : "none";
-
     if(isCp){
       noteEl.textContent = "Check Point: genera CSV de IoC (blade/product) para carga masiva.";
-      outEl.textContent = "Completa los campos y presiona “Generar CSV”.";
+      outEl.textContent = "Completa los campos y presiona Generar CSV.";
       refreshCounters();
     } else {
       noteEl.textContent = "";
@@ -502,117 +565,62 @@
 
   // ---------- Helpers ----------
   function escapeQuotes(s){ return (s||"").replaceAll('"','""'); }
-
   function pad2(n){ return String(n).padStart(2,"0"); }
-
-function nowLocal(){
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = pad2(d.getMonth() + 1);
-  const dd = pad2(d.getDate());
-  const hh = pad2(d.getHours());
-  const mi = pad2(d.getMinutes());
-  const ss = pad2(d.getSeconds());
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-}
-
-  function normalizeIoc(s){
-    return (s || "")
-      .trim()
-      // defang de puntos
-      .replaceAll("[.]", ".")
-      .replaceAll("(.)", ".")
-      .replaceAll("{.}", ".")
-      // a veces separan con espacios
-      .replace(/\s*\.\s*/g, ".")
-      // defang de scheme
-      .replace(/^hxxps:\/\//i, "https://")
-      .replace(/^hxxp:\/\//i, "http://")
-      // reduce espacios múltiples
-      .replace(/\s+/g, " ");
+  function nowLocal(){
+    const d = new Date();
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   }
-
+  function normalizeIoc(s){
+    return (s||"").trim()
+      .replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".")
+      .replace(/\s*\.\s*/g,".")
+      .replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://")
+      .replace(/\s+/g," ");
+  }
   function isValidIPv4(ip){
     const m = ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);
     if(!m) return false;
-    return ip.split(".").every(o => Number(o)>=0 && Number(o)<=255);
+    return ip.split(".").every(o=>Number(o)>=0&&Number(o)<=255);
   }
-
   function parseLines(text){
-    return text
-      .split(/\r?\n/)
-      .map(s => normalizeIoc(s))
-      .map(s => s.trim())
-      .filter(Boolean);
+    return text.split(/\r?\n/).map(s=>normalizeIoc(s)).map(s=>s.trim()).filter(Boolean);
   }
-
   function dedupe(arr){
-    const seen = new Set();
-    const out = [];
-    for(const x of arr){
-      const k = x.toLowerCase();
-      if(seen.has(k)) continue;
-      seen.add(k);
-      out.push(x);
-    }
+    const seen=new Set(), out=[];
+    for(const x of arr){ const k=x.toLowerCase(); if(seen.has(k)) continue; seen.add(k); out.push(x); }
     return out;
   }
+  function objName(ip){ return "AS_"+ip; }
 
-  function objName(ip){ return "AS_" + ip; }
-
-  // ---------- Local log (mejorado) ----------
+  // ---------- Local log ----------
   const LOG_KEY = "ioc_suite_log_v2";
   const logTbody = document.getElementById("log");
-
-  function loadLog(){
-    try{ return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); }
-    catch{ return []; }
-  }
-  function saveLog(rows){
-    localStorage.setItem(LOG_KEY, JSON.stringify(rows));
-  }
+  function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY)||"[]"); }catch{ return []; } }
+  function saveLog(rows){ localStorage.setItem(LOG_KEY, JSON.stringify(rows)); }
   function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+    return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
   }
   function renderLog(){
     const rows = loadLog();
     logTbody.innerHTML = "";
     rows.slice(-300).reverse().forEach(r=>{
       const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${escapeHtml(r.date)}</td>
-        <td>${escapeHtml(r.vendor)}</td>
-        <td>${escapeHtml(r.type)}</td>
-        <td style="font-family:var(--mono)">${escapeHtml(r.ioc)}</td>
-        <td>${escapeHtml(r.group || "—")}</td>
-        <td>${escapeHtml(r.comment || "—")}</td>
-        <td>${escapeHtml(r.extra || "—")}</td>
-      `;
+      tr.innerHTML = `<td>${escapeHtml(r.date)}</td><td>${escapeHtml(r.vendor)}</td><td>${escapeHtml(r.type)}</td>
+        <td style="font-family:var(--mono)">${escapeHtml(r.ioc)}</td><td>${escapeHtml(r.group||"-")}</td>
+        <td>${escapeHtml(r.comment||"-")}</td><td>${escapeHtml(r.extra||"-")}</td>`;
       logTbody.appendChild(tr);
     });
   }
-  function addLogEntry({ vendor, type, ioc, group, comment, extra }){
+  function addLogEntry({vendor,type,ioc,group,comment,extra}){
     const rows = loadLog();
-    rows.push({
-      date: nowLocal(),
-      vendor: vendor || "—",
-      type: type || "—",
-      ioc: ioc || "—",
-      group: group || "",
-      comment: comment || "",
-      extra: extra || ""
-    });
+    rows.push({ date:nowLocal(), vendor:vendor||"-", type:type||"-", ioc:ioc||"-", group:group||"", comment:comment||"", extra:extra||"" });
     saveLog(rows);
     renderLog();
   }
   renderLog();
 
-  // ---------- FW MODE (Forti/Palo) ----------
+  // ---------- FW MODE ----------
   const ipsEl = document.getElementById("ips");
   const commentEl = document.getElementById("comment");
   const groupEl = document.getElementById("group");
@@ -620,323 +628,247 @@ function nowLocal(){
   const copyFwBtn = document.getElementById("copyFw");
 
   function parseIPs(text){
-    const lines = parseLines(text);
-    const ips = [];
-    const bad = [];
-    const seen = new Set();
+    const lines = parseLines(text), ips=[], bad=[], seen=new Set();
     for(const raw of lines){
-      const line = normalizeIoc(raw);
-      const key = line.toLowerCase();
-      if(seen.has(key)) continue;
-      seen.add(key);
-
-      if(isValidIPv4(line)) ips.push(line);
-      else bad.push(line);
+      const line=normalizeIoc(raw), key=line.toLowerCase();
+      if(seen.has(key)) continue; seen.add(key);
+      if(isValidIPv4(line)) ips.push(line); else bad.push(line);
     }
-    return { ips, bad };
+    return {ips,bad};
   }
-
-  function genFortigate(ips, comment, group){
-    const addrLines = [];
-    addrLines.push("config firewall address");
+  function genFortigate(ips,comment,group){
+    const a=["config firewall address"];
     for(const ip of ips){
-      const name = objName(ip);
-      addrLines.push(`    edit "${name}"`);
-      addrLines.push(`        set subnet ${ip} 255.255.255.255`);
-      addrLines.push(`        set comment "${comment.replaceAll('"','\\"')}"`);
-      addrLines.push("    next");
+      const n=objName(ip);
+      a.push(`    edit "${n}"`);
+      a.push(`        set subnet ${ip} 255.255.255.255`);
+      a.push(`        set comment "${comment.replaceAll('"','\\"')}"`);
+      a.push("    next");
     }
-    addrLines.push("end");
-
-    const grpLines = [];
-    grpLines.push("");
-    grpLines.push("config firewall addrgrp");
-    grpLines.push(`    edit "${group}"`);
-    for(const ip of ips){
-      const name = objName(ip);
-      grpLines.push(`        append member "${name}"`);
-    }
-    grpLines.push("    next");
-    grpLines.push("end");
-
-    return addrLines.join("\n") + grpLines.join("\n");
+    a.push("end","","config firewall addrgrp",`    edit "${group}"`);
+    for(const ip of ips) a.push(`        append member "${objName(ip)}"`);
+    a.push("    next","end");
+    return a.join("\n");
   }
-
-  function genPaloalto(ips, comment, group, vsys, doCommit){
-    const lines = [];
-    for(const ip of ips){
-      const name = objName(ip);
-      lines.push(`set vsys ${vsys} address ${name} ip-netmask ${ip}/32 description "${comment.replaceAll('"','\\"')}"`);
-    }
-    for(const ip of ips){
-      const name = objName(ip);
-      lines.push(`set vsys ${vsys} address-group ${group} static ${name}`);
-    }
+  function genPaloalto(ips,comment,group,vsys,doCommit){
+    const lines=[];
+    for(const ip of ips) lines.push(`set vsys ${vsys} address ${objName(ip)} ip-netmask ${ip}/32 description "${comment.replaceAll('"','\\"')}"`);
+    for(const ip of ips) lines.push(`set vsys ${vsys} address-group ${group} static ${objName(ip)}`);
     if(doCommit) lines.push("commit");
     return lines.join("\n");
   }
-
   function buildFw(){
-    const { ips, bad } = parseIPs(ipsEl.value);
-    const comment = (commentEl.value || "").trim();
-    const group = (groupEl.value || "").trim();
-
-    if(!ips.length) throw new Error("No hay IPs válidas para procesar.");
-    if(!comment || !group) throw new Error("Falta comentario o grupo de bloqueo.");
-
-    if(bad.length){
-      toast("warn", "Aviso", `Líneas inválidas ignoradas: ${bad.slice(0,5).join(", ")}${bad.length>5?" ...":""}`);
-    }
-
-    let out = "";
-    if(vendorValue==="fortigate"){
-      out = genFortigate(ips, comment, group);
-    } else {
-      out = genPaloalto(ips, comment, group, (vsysEl.value.trim()||"vsys1"), doCommit);
-    }
-    return { out, ips, comment, group };
+    const {ips,bad}=parseIPs(ipsEl.value);
+    const comment=(commentEl.value||"").trim(), group=(groupEl.value||"").trim();
+    if(!ips.length) throw new Error("No hay IPs validas para procesar.");
+    if(!comment||!group) throw new Error("Falta comentario o grupo de bloqueo.");
+    if(bad.length) toast("warn","Aviso",`Lineas invalidas ignoradas: ${bad.slice(0,5).join(", ")}${bad.length>5?" ...":""}`);
+    const out = vendorValue==="fortigate"
+      ? genFortigate(ips,comment,group)
+      : genPaloalto(ips,comment,group,(vsysEl.value.trim()||"vsys1"),doCommit);
+    return {out,ips,comment,group};
   }
-
-  genFwBtn.addEventListener("click", ()=>{
+  genFwBtn.addEventListener("click",()=>{
     try{
-      if(vendorValue==="checkpoint"){
-        toast("warn","Ojo","Estás en modo Check Point. Usa “Generar CSV”.");
-        return;
-      }
-
-      const { out, ips, comment, group } = buildFw();
-      outEl.textContent = out;
-      copyFwBtn.disabled = false;
-      toast("ok","Generado ✅","Salida lista para copiar/pegar.");
-
-      const extra =
-        vendorValue === "paloalto"
-          ? `vsys=${(vsysEl.value.trim()||"vsys1")} commit=${doCommit ? "yes" : "no"}`
-          : "—";
-
-      ips.forEach(ip => addLogEntry({
-        vendor: vendorValue,
-        type: "IP",
-        ioc: ip,
-        group,
-        comment,
-        extra
-      }));
-
-    }catch(e){
-      outEl.textContent = "—";
-      copyFwBtn.disabled = true;
-      toast("bad","Error", e.message);
-    }
+      if(vendorValue==="checkpoint"){ toast("warn","Ojo","Estas en modo Check Point."); return; }
+      const {out,ips,comment,group}=buildFw();
+      outEl.textContent=out; copyFwBtn.disabled=false;
+      toast("ok","Generado","Salida lista para copiar/pegar.");
+      const extra=vendorValue==="paloalto"?`vsys=${vsysEl.value.trim()||"vsys1"} commit=${doCommit?"yes":"no"}`:"";
+      ips.forEach(ip=>addLogEntry({vendor:vendorValue,type:"IP",ioc:ip,group,comment,extra}));
+    }catch(e){ outEl.textContent=""; copyFwBtn.disabled=true; toast("bad","Error",e.message); }
+  });
+  copyFwBtn.addEventListener("click",async()=>{
+    try{ await navigator.clipboard.writeText(outEl.textContent||""); toast("ok","Copiado","Listo."); }
+    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
   });
 
-  copyFwBtn.addEventListener("click", async ()=>{
-    try{
-      await navigator.clipboard.writeText(outEl.textContent || "");
-      toast("ok","Copiado ✅","Listo.");
-    }catch{
-      toast("warn","Ojo","El navegador no dejó copiar. Copia manual.");
-    }
-  });
-
-  // ---------- CHECK POINT CSV MODE ----------
-  const cpConfidence = document.getElementById("cpConfidence");
-  const cpSeverity   = document.getElementById("cpSeverity");
-  const cpProduct    = document.getElementById("cpProduct");
-  const cpComment    = document.getElementById("cpComment");
-
-  const cpIps     = document.getElementById("cpIps");
-  const cpDomains = document.getElementById("cpDomains");
-  const cpUrls    = document.getElementById("cpUrls");
-  const cpHashes  = document.getElementById("cpHashes");
-
-  const cpPrefix   = document.getElementById("cpPrefix");
-  const cpUniqMode = document.getElementById("cpUniqMode");
-  const cpDedupe   = document.getElementById("cpDedupe");
-
-  const nIp   = document.getElementById("nIp");
-  const nDom  = document.getElementById("nDom");
-  const nUrl  = document.getElementById("nUrl");
-  const nHash = document.getElementById("nHash");
-
-  const genCpBtn  = document.getElementById("genCp");
-  const copyCpBtn = document.getElementById("copyCp");
-  const dlCpBtn   = document.getElementById("dlCp");
-  const openCpBtn = document.getElementById("openCp");
-  const sampleCpBtn = document.getElementById("sampleCp");
+  // ---------- CHECK POINT ----------
+  const cpConfidence=document.getElementById("cpConfidence"),cpSeverity=document.getElementById("cpSeverity"),
+    cpProduct=document.getElementById("cpProduct"),cpComment=document.getElementById("cpComment"),
+    cpIps=document.getElementById("cpIps"),cpDomains=document.getElementById("cpDomains"),
+    cpUrls=document.getElementById("cpUrls"),cpHashes=document.getElementById("cpHashes"),
+    cpPrefix=document.getElementById("cpPrefix"),cpUniqMode=document.getElementById("cpUniqMode"),
+    cpDedupe=document.getElementById("cpDedupe"),
+    nIp=document.getElementById("nIp"),nDom=document.getElementById("nDom"),
+    nUrl=document.getElementById("nUrl"),nHash=document.getElementById("nHash"),
+    genCpBtn=document.getElementById("genCp"),copyCpBtn=document.getElementById("copyCp"),
+    dlCpBtn=document.getElementById("dlCp"),openCpBtn=document.getElementById("openCp"),
+    sampleCpBtn=document.getElementById("sampleCp");
 
   function sanitizeForUniq(s){
-    return s.replaceAll("://","_")
-            .replaceAll("/","_")
-            .replaceAll(".","_")
-            .replaceAll(":","_")
-            .replaceAll("?","_")
-            .replaceAll("&","_")
-            .replaceAll("=","_")
-            .replaceAll("@","_")
-            .replaceAll("#","_")
-            .replaceAll("%","_")
-            .replaceAll("+","_")
-            .replaceAll(" ","_")
-            .replace(/[^a-zA-Z0-9_\-]/g, "_")
-            .slice(0,64);
+    return s.replaceAll("://","_").replaceAll("/","_").replaceAll(".","_").replaceAll(":","_")
+      .replaceAll("?","_").replaceAll("&","_").replaceAll("=","_").replaceAll("@","_")
+      .replaceAll("#","_").replaceAll("%","_").replaceAll("+","_").replaceAll(" ","_")
+      .replace(/[^a-zA-Z0-9_\-]/g,"_").slice(0,64);
   }
-
   function detectHashType(h){
-    const x = normalizeIoc(h).trim();
+    const x=normalizeIoc(h).trim();
     if(/^[a-fA-F0-9]{32}$/.test(x)) return "MD5";
     if(/^[a-fA-F0-9]{64}$/.test(x)) return "SHA256";
     return "HASH";
   }
-
   function refreshCounters(){
-    let ips = parseLines(cpIps.value).filter(isValidIPv4);
-    let dom = parseLines(cpDomains.value);
-    let url = parseLines(cpUrls.value);
-    let hsh = parseLines(cpHashes.value);
-
-    if(cpDedupe.value==="yes"){
-      ips = dedupe(ips); dom = dedupe(dom); url = dedupe(url); hsh = dedupe(hsh);
-    }
-    nIp.textContent = String(ips.length);
-    nDom.textContent = String(dom.length);
-    nUrl.textContent = String(url.length);
-    nHash.textContent = String(hsh.length);
+    let ips=parseLines(cpIps.value).filter(isValidIPv4),dom=parseLines(cpDomains.value),
+      url=parseLines(cpUrls.value),hsh=parseLines(cpHashes.value);
+    if(cpDedupe.value==="yes"){ips=dedupe(ips);dom=dedupe(dom);url=dedupe(url);hsh=dedupe(hsh);}
+    nIp.textContent=String(ips.length);nDom.textContent=String(dom.length);
+    nUrl.textContent=String(url.length);nHash.textContent=String(hsh.length);
   }
-
-  [cpIps, cpDomains, cpUrls, cpHashes, cpDedupe].forEach(el=>{
-    el.addEventListener("input", refreshCounters);
-    el.addEventListener("change", refreshCounters);
+  [cpIps,cpDomains,cpUrls,cpHashes,cpDedupe].forEach(el=>{
+    el.addEventListener("input",refreshCounters); el.addEventListener("change",refreshCounters);
   });
-
   function buildCheckpointCSV(){
-    const confidence = cpConfidence.value;
-    const severity   = cpSeverity.value;
-    const product    = cpProduct.value;
-    const comment    = (cpComment.value || "").trim() || `IOCs_${new Date().toISOString().slice(0,10)}`;
-
-    let ips = parseLines(cpIps.value).filter(isValidIPv4);
-    let dom = parseLines(cpDomains.value);
-    let url = parseLines(cpUrls.value);
-    let hsh = parseLines(cpHashes.value);
-
-    if(cpDedupe.value==="yes"){
-      ips = dedupe(ips); dom = dedupe(dom); url = dedupe(url); hsh = dedupe(hsh);
-    }
-
-    const rows = [];
-    const prefix = (cpPrefix.value || "ioc").trim() || "ioc";
-    let seq = 1;
-
-    function uniqNameFor(ioc){
-      if(cpUniqMode.value==="seq") return `${prefix}${seq++}`;
-      return `${prefix}_${sanitizeForUniq(ioc)}`;
-    }
-
-    function pushRow(ioc, type){
-      const uniq = uniqNameFor(ioc);
-      rows.push([uniq, ioc, type, confidence, severity, product, comment]);
-    }
-
-    ips.forEach(ip => pushRow(ip, "IP"));
-    dom.forEach(d  => pushRow(d, "DOMAIN"));
-    url.forEach(u  => pushRow(u, "URL"));
-    hsh.forEach(h  => pushRow(h, detectHashType(h)));
-
+    const confidence=cpConfidence.value,severity=cpSeverity.value,product=cpProduct.value,
+      comment=(cpComment.value||"").trim()||`IOCs_${new Date().toISOString().slice(0,10)}`;
+    let ips=parseLines(cpIps.value).filter(isValidIPv4),dom=parseLines(cpDomains.value),
+      url=parseLines(cpUrls.value),hsh=parseLines(cpHashes.value);
+    if(cpDedupe.value==="yes"){ips=dedupe(ips);dom=dedupe(dom);url=dedupe(url);hsh=dedupe(hsh);}
+    const rows=[],prefix=(cpPrefix.value||"ioc").trim()||"ioc";let seq=1;
+    function uniqNameFor(ioc){ return cpUniqMode.value==="seq"?`${prefix}${seq++}`:`${prefix}_${sanitizeForUniq(ioc)}`; }
+    function pushRow(ioc,type){ rows.push([uniqNameFor(ioc),ioc,type,confidence,severity,product,comment]); }
+    ips.forEach(ip=>pushRow(ip,"IP")); dom.forEach(d=>pushRow(d,"DOMAIN"));
+    url.forEach(u=>pushRow(u,"URL")); hsh.forEach(h=>pushRow(h,detectHashType(h)));
     if(!rows.length) throw new Error("No hay IoCs para generar CSV.");
-
-    const csv = rows.map(r => r.map(v => `"${escapeQuotes(String(v))}"`).join(",")).join("\n");
-    return { csv, count: rows.length, ips, dom, url, hsh, meta: {confidence, severity, product, comment} };
+    const csv=rows.map(r=>r.map(v=>`"${escapeQuotes(String(v))}"`).join(",")).join("\n");
+    return {csv,count:rows.length,ips,dom,url,hsh,meta:{confidence,severity,product,comment}};
   }
-
-  function downloadText(filename, text){
-    const blob = new Blob([text], {type:"text/csv;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  function downloadText(filename,text){
+    const blob=new Blob([text],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove();
   }
-
-  genCpBtn.addEventListener("click", ()=>{
+  genCpBtn.addEventListener("click",()=>{
     try{
-      if(vendorValue!=="checkpoint"){
-        toast("warn","Ojo","Estás en modo Firewall. Usa “Generar”.");
-        return;
-      }
-
-      const { csv, count, ips, dom, url, hsh, meta } = buildCheckpointCSV();
-      outEl.textContent = csv;
-
-      copyCpBtn.disabled = false;
-      dlCpBtn.disabled = false;
-      openCpBtn.disabled = false;
-
-      toast("ok","CSV listo ✅", `${count} IoCs generados.`);
-
-      const extra = `product=${meta.product} conf=${meta.confidence} sev=${meta.severity}`;
-      ips.forEach(v => addLogEntry({ vendor:"checkpoint", type:"IP", ioc:v, group:"", comment: meta.comment, extra }));
-      dom.forEach(v => addLogEntry({ vendor:"checkpoint", type:"DOMAIN", ioc:v, group:"", comment: meta.comment, extra }));
-      url.forEach(v => addLogEntry({ vendor:"checkpoint", type:"URL", ioc:v, group:"", comment: meta.comment, extra }));
-      hsh.forEach(v => addLogEntry({ vendor:"checkpoint", type: detectHashType(v), ioc: normalizeIoc(v), group:"", comment: meta.comment, extra }));
-
-    }catch(e){
-      outEl.textContent = "—";
-      copyCpBtn.disabled = true;
-      dlCpBtn.disabled = true;
-      openCpBtn.disabled = true;
-      toast("bad","Error", e.message);
-    }
+      if(vendorValue!=="checkpoint"){ toast("warn","Ojo","Estas en modo Firewall."); return; }
+      const {csv,count,ips,dom,url,hsh,meta}=buildCheckpointCSV();
+      outEl.textContent=csv; copyCpBtn.disabled=false; dlCpBtn.disabled=false; openCpBtn.disabled=false;
+      toast("ok","CSV listo",`${count} IoCs generados.`);
+      const extra=`product=${meta.product} conf=${meta.confidence} sev=${meta.severity}`;
+      ips.forEach(v=>addLogEntry({vendor:"checkpoint",type:"IP",ioc:v,group:"",comment:meta.comment,extra}));
+      dom.forEach(v=>addLogEntry({vendor:"checkpoint",type:"DOMAIN",ioc:v,group:"",comment:meta.comment,extra}));
+      url.forEach(v=>addLogEntry({vendor:"checkpoint",type:"URL",ioc:v,group:"",comment:meta.comment,extra}));
+      hsh.forEach(v=>addLogEntry({vendor:"checkpoint",type:detectHashType(v),ioc:normalizeIoc(v),group:"",comment:meta.comment,extra}));
+    }catch(e){ outEl.textContent=""; copyCpBtn.disabled=true; dlCpBtn.disabled=true; openCpBtn.disabled=true; toast("bad","Error",e.message); }
   });
-
-  copyCpBtn.addEventListener("click", async ()=>{
-    try{
-      await navigator.clipboard.writeText(outEl.textContent || "");
-      toast("ok","Copiado ✅","CSV copiado al portapapeles.");
-    }catch{
-      toast("warn","Ojo","El navegador no dejó copiar. Copia manual.");
-    }
+  copyCpBtn.addEventListener("click",async()=>{
+    try{ await navigator.clipboard.writeText(outEl.textContent||""); toast("ok","Copiado","CSV copiado al portapapeles."); }
+    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
   });
-
-  dlCpBtn.addEventListener("click", ()=>{
-    const name = `checkpoint_iocs_${new Date().toISOString().slice(0,10)}.csv`;
-    downloadText(name, outEl.textContent || "");
-    toast("ok","Descargado ✅", name);
+  dlCpBtn.addEventListener("click",()=>{
+    const name=`checkpoint_iocs_${new Date().toISOString().slice(0,10)}.csv`;
+    downloadText(name,outEl.textContent||""); toast("ok","Descargado",name);
   });
-
-  openCpBtn.addEventListener("click", ()=>{
-    const w = window.open("", "_blank");
-    if(!w){
-      toast("warn","Ojo","Tu navegador bloqueó la pestaña. Permite popups o usa Descargar.");
-      return;
-    }
-    const esc = (outEl.textContent || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  openCpBtn.addEventListener("click",()=>{
+    const w=window.open("","_blank");
+    if(!w){ toast("warn","Ojo","Tu navegador bloqueo la pestana. Permite popups o usa Descargar."); return; }
+    const esc=(outEl.textContent||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
     w.document.write(`<pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${esc}</pre>`);
     w.document.close();
   });
-
-  sampleCpBtn.addEventListener("click", ()=>{
-    cpIps.value = "83.44.55.66\n104[.]28.212.115";
-    cpDomains.value = "malicioso.com\nphish-login.net";
-    cpUrls.value = "hxxp://malicioso[.]com/malware.exe\nhxxps://phish-login[.]net/portal/index.html";
-    cpHashes.value = "d41d8cd98f00b204e9800998ecf8427e\na3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
-    cpPrefix.value = "observ";
-    cpComment.value = `IOCs_${new Date().toISOString().slice(0,10)}`;
-    refreshCounters();
-    toast("ok","Ejemplo cargado ✅","Listo para generar.");
+  sampleCpBtn.addEventListener("click",()=>{
+    cpIps.value="83.44.55.66\n104[.]28.212.115";
+    cpDomains.value="malicioso.com\nphish-login.net";
+    cpUrls.value="hxxp://malicioso[.]com/malware.exe\nhxxps://phish-login[.]net/portal/index.html";
+    cpHashes.value="d41d8cd98f00b204e9800998ecf8427e\na3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
+    cpPrefix.value="observ";
+    cpComment.value=`IOCs_${new Date().toISOString().slice(0,10)}`;
+    refreshCounters(); toast("ok","Ejemplo cargado","Listo para generar.");
   });
 
-  // Ctrl+Enter to generate
-  document.addEventListener("keydown", (e)=>{
-    if(e.ctrlKey && e.key === "Enter"){
-      if(vendorValue==="checkpoint") genCpBtn.click();
-      else genFwBtn.click();
-    }
+  document.addEventListener("keydown",(e)=>{
+    if(e.ctrlKey&&e.key==="Enter"){ if(vendorValue==="checkpoint") genCpBtn.click(); else genFwBtn.click(); }
   });
-
-  // Init
   setVendor("fortigate");
+
+  // ════════════════════════════════════════════
+  // NUEVA LOGICA: Defang cleaner + Wildcard formatter
+  // ════════════════════════════════════════════
+
+  async function copyToClipboard(text, label){
+    try{ await navigator.clipboard.writeText(text); toast("ok","Copiado",`${label} copiado al portapapeles.`); }
+    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
+  }
+
+  // ── Defang cleaner ──
+  function cleanDefang(line){
+    return line.trim()
+      .replaceAll("[.]",".")
+      .replaceAll("(.)",".")
+      .replaceAll("{.}",".")
+      .replace(/^hxxps:\/\//i,"https://")
+      .replace(/^hxxp:\/\//i,"http://")
+      .replaceAll("[://]","://")
+      .replace(/\s*\.\s*/g,".")
+      .trim();
+  }
+
+  const defangInput   = document.getElementById("defangInput");
+  const defangOutput  = document.getElementById("defangOutput");
+  const defangBtn     = document.getElementById("defangBtn");
+  const defangCopy    = document.getElementById("defangCopy");
+  const defangClear   = document.getElementById("defangClear");
+  const defangCounter = document.getElementById("defangCounter");
+  const defangCountEl = document.getElementById("defangCount");
+
+  defangBtn.addEventListener("click",()=>{
+    const lines = defangInput.value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    if(!lines.length){ toast("bad","Error","No hay IoCs para procesar."); return; }
+    const result = lines.map(cleanDefang);
+    defangOutput.textContent = result.join("\n");
+    defangOutput.style.display = "block";
+    defangCountEl.textContent = String(result.length);
+    defangCounter.style.display = "inline-flex";
+    defangCopy.disabled = false;
+    toast("ok","Listo",`${result.length} IoCs limpiados.`);
+  });
+  defangCopy.addEventListener("click",()=>{ copyToClipboard(defangOutput.textContent||"","Resultado"); });
+  defangClear.addEventListener("click",()=>{
+    defangInput.value=""; defangOutput.textContent="";
+    defangOutput.style.display="none"; defangCounter.style.display="none"; defangCopy.disabled=true;
+  });
+
+  // ── Wildcard formatter ──
+  // Regla: *.dominio[.]tld  →  *dominio.tld*
+  // 1. Quitar el "." entre "*" y el dominio
+  // 2. Limpiar [.] → .
+  // 3. Agregar "*" al final
+  function formatWildcard(line){
+    let s = line.trim();
+    if(!s) return "";
+    // Quitar punto entre * inicial y el dominio: "*.algo" → "*algo"
+    s = s.replace(/^\*\s*\.\s*/,"*");
+    // Limpiar corchetes
+    s = s.replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");
+    // Agregar * al final si no lo tiene
+    if(!s.endsWith("*")) s = s + "*";
+    return s;
+  }
+
+  const wildcardInput   = document.getElementById("wildcardInput");
+  const wildcardOutput  = document.getElementById("wildcardOutput");
+  const wildcardBtn     = document.getElementById("wildcardBtn");
+  const wildcardCopy    = document.getElementById("wildcardCopy");
+  const wildcardClear   = document.getElementById("wildcardClear");
+  const wildcardCounter = document.getElementById("wildcardCounter");
+  const wildcardCountEl = document.getElementById("wildcardCount");
+
+  wildcardBtn.addEventListener("click",()=>{
+    const lines = wildcardInput.value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    if(!lines.length){ toast("bad","Error","No hay wildcards para procesar."); return; }
+    const result = lines.map(formatWildcard).filter(Boolean);
+    wildcardOutput.textContent = result.join("\n");
+    wildcardOutput.style.display = "block";
+    wildcardCountEl.textContent = String(result.length);
+    wildcardCounter.style.display = "inline-flex";
+    wildcardCopy.disabled = false;
+    toast("ok","Listo",`${result.length} wildcards formateadas.`);
+  });
+  wildcardCopy.addEventListener("click",()=>{ copyToClipboard(wildcardOutput.textContent||"","Wildcards"); });
+  wildcardClear.addEventListener("click",()=>{
+    wildcardInput.value=""; wildcardOutput.textContent="";
+    wildcardOutput.style.display="none"; wildcardCounter.style.display="none"; wildcardCopy.disabled=true;
+  });
 </script>
 </body>
 </html>
