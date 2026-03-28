@@ -438,7 +438,7 @@
         <textarea id="defangInput" placeholder="104[.]28[.]212[.]115&#10;hxxps://malware[.]com/path&#10;evil[.]domain[.]net"></textarea>
 
         <div class="actions">
-          <button class="primary" id="defangBtn">Limpiar</button>
+          <button class="primary" id="defangBtn">Modificar</button>
           <button id="defangCopy" disabled>Copiar resultado</button>
           <button id="defangClear">Limpiar campos</button>
         </div>
@@ -453,11 +453,11 @@
       <div class="ioc-tool-card">
         <h3>Formateador de Wildcards</h3>
         <div class="desc">
-          Convierte wildcards en formato defang al formato correcto para FortiGate. Elimina el punto entre <code>*</code> y el dominio, quita corchetes y agrega <code>*</code> al final.
+          Convierte dominios al formato wildcard para McAfee Proxy. Acepta entradas con o sin notacion defang, con o sin asterisco previo. Fuerza minusculas en la salida.
         </div>
         <div class="example">
           <code>*.gestioncurso[.]cl</code> <span class="arrow">&rarr;</span> <code>*gestioncurso.cl*</code><br>
-          <code>*.goodvibrationsmusic[.]co[.]uk</code> <span class="arrow">&rarr;</span> <code>*goodvibrationsmusic.co.uk*</code>
+          <code>MALWARE[.]DOMAIN[.]COM</code> <span class="arrow">&rarr;</span> <code>*malware.domain.com*</code>
         </div>
 
         <label>Wildcards &mdash; una por linea</label>
@@ -836,12 +836,14 @@
   function formatWildcard(line){
     let s = line.trim();
     if(!s) return "";
-    // Quitar punto entre * inicial y el dominio: "*.algo" → "*algo"
-    s = s.replace(/^\*\s*\.\s*/,"*");
-    // Limpiar corchetes
+    // 1. Forzar minusculas
+    s = s.toLowerCase();
+    // 2. Limpiar notacion defang [.] → .
     s = s.replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");
-    // Agregar * al final si no lo tiene
-    if(!s.endsWith("*")) s = s + "*";
+    // 3. Quitar asterisco(s) y punto inicial si los trae: "*.dominio" → "dominio" | "*dominio" → "dominio"
+    s = s.replace(/^\*\.?/, "");
+    // 4. Envolver con * al inicio y al final
+    s = "*" + s + "*";
     return s;
   }
 
