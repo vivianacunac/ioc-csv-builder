@@ -2,875 +2,1080 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Generador IoC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoC Suite</title>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-v2.png">
-</head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+
     :root{
-      --bg:#0b0f19;
-      --card:#0f172a;
-      --text:#e6edf3;
-      --muted:#9aa4b2;
-      --bd:rgba(255,255,255,.08);
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --accent:#7c3aed;
+      --bg:#050508;
+      --s0:#0a0a10;
+      --s1:#0f0f18;
+      --s2:#161622;
+      --s3:#1e1e30;
+      --tx:#eaedf6;
+      --tx2:#8b90a8;
+      --tx3:#555874;
+      --bd:rgba(255,255,255,.05);
+      --bd2:rgba(255,255,255,.09);
+      --glass:rgba(12,12,22,.65);
+      --glass-bd:rgba(255,255,255,.07);
+      --cy:#00e5ff;
+      --cy-g:rgba(0,229,255,.12);
+      --cy-g2:rgba(0,229,255,.25);
+      --mg:#c026d3;
+      --mg-g:rgba(192,38,211,.15);
       --ok:#22c55e;
+      --ok-g:rgba(34,197,94,.15);
       --bad:#ef4444;
       --warn:#f59e0b;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      color-scheme: dark;
+      --mono:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+      --ui:'Outfit',system-ui,sans-serif;
+      --r:10px;
+      --r2:16px;
+      color-scheme:dark;
     }
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f6f7fb;
-        --card:#ffffff;
-        --text:#0b1220;
-        --muted:#5b6677;
-        --bd:rgba(15,23,42,.10);
-        --shadow: 0 14px 30px rgba(15,23,42,.08);
-        --accent:#6d28d9;
-      }
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(124,58,237,.22), transparent 55%),
-                  radial-gradient(900px 500px at 90% 10%, rgba(34,197,94,.14), transparent 45%),
-                  var(--bg);
-      color:var(--text);
-    }
-    header{
-      position: sticky; top:0;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,0));
-      border-bottom: 1px solid var(--bd);
-      padding: 18px 20px;
-      z-index: 5;
-    }
-    .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-    h1{margin:0;font-size:18px;letter-spacing:.2px}
-    .sub{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
-    .pill{
-      display:inline-flex;gap:8px;align-items:center;
-      margin-top:10px;
-      padding:6px 10px;
-      border:1px solid var(--bd);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(124,58,237,.15)}
-    main{padding:18px 0 44px}
-    .grid{
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 14px;
-      margin-top: 14px;
-    }
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--card);
-      border: 1px solid var(--bd);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    .card h2{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
-    label{
-      display:block;
-      margin-top: 10px;
-      font-weight: 800;
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing:.25px;
-      text-transform: uppercase;
-    }
-    input, textarea, select{
-      width:100%;
-      padding: 11px 12px;
-      margin-top: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--bd);
-      background: #111827;
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-    }
-    input:focus, textarea:focus, select:focus{
-      border-color: rgba(124,58,237,.55);
-      box-shadow: 0 0 0 4px rgba(124,58,237,.18);
-    }
-    select option{ background:#111827; color: var(--text); }
-    textarea{resize:vertical;min-height:110px}
-    .row{display:flex;gap:10px}
-    .row > *{flex:1}
-    .hint{ font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top: 12px}
-    button{
-      border:1px solid var(--bd);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 900;
-      cursor:pointer;
-      transition: transform .06s ease, border-color .12s ease, background .12s ease;
-    }
-    button:hover{transform: translateY(-1px);border-color: rgba(124,58,237,.35)}
-    button:active{transform: translateY(0)}
-    button.primary{
-      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(99,102,241,.85));
-      border-color: rgba(124,58,237,.65);
-    }
-    button.success{
-      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(16,185,129,.85));
-      border-color: rgba(34,197,94,.65);
-    }
-    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-    .vendor-pills{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
-    .pill-btn{
-      border:1px solid var(--bd);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      padding:10px 16px;
-      border-radius:999px;
-      font-weight:900;
-      cursor:pointer;
-      transition: all .15s ease;
-    }
-    .pill-btn:hover{ border-color: rgba(124,58,237,.45); transform: translateY(-1px); }
-    .pill-btn.active{
-      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(99,102,241,.85));
-      border-color: rgba(124,58,237,.65);
-    }
-    pre{
-      margin:0;
-      background: #060913;
-      border: 1px solid rgba(255,255,255,.10);
-      color: #e6edf3;
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 300px;
-      font-family: var(--mono);
-      font-size: 12.8px;
-      line-height: 1.35;
-      overflow:auto;
-      white-space:pre-wrap;
-      word-break:break-word;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-    }
-    .note{margin-top: 10px;color: var(--muted);font-size: 12px;line-height: 1.35}
-    table{width:100%;border-collapse:collapse;margin-top: 10px}
-    th,td{border-top:1px solid var(--bd);padding: 8px 6px;font-size: 12.5px;text-align:left;color: var(--text);vertical-align:top}
-    th{color:var(--muted);font-weight:900}
-    .toast{
-      position: fixed; right: 16px; bottom: 16px; max-width: 560px;
-      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--bd);
-      background: rgba(15,23,42,.92); color: var(--text); box-shadow: var(--shadow);
-      display:flex; gap:10px; align-items:flex-start;
-      transform: translateY(12px); opacity: 0; pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-      z-index: 10;
-    }
-    .toast.show{opacity:1;transform: translateY(0)}
-    .badge{width:10px;height:10px;border-radius:999px;margin-top:4px}
-    .badge.ok{background:var(--ok)}
-    .badge.bad{background:var(--bad)}
-    .badge.warn{background:var(--warn)}
-    .toast .t{font-weight:900}
-    .toast .m{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.25}
-    .counterbar{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    .counter{
-      border:1px solid var(--bd); border-radius:999px; padding:6px 10px; font-size:12px;
-      color:var(--muted); background: rgba(255,255,255,.03);
-      display:inline-flex; align-items:center; gap:8px;
-    }
-    .counter b{color:var(--text)}
-    .mini{ font-size:12px; color:var(--muted); }
 
-    /* ── Formateador IoCs ── */
-    .section-divider{
-      display:flex; align-items:center; gap:12px;
-      margin: 22px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .5px;
+    [data-theme="light"]{
+      --bg:#f0f2f7;
+      --s0:#e6e9f0;
+      --s1:#ffffff;
+      --s2:#f4f5f9;
+      --s3:#e8eaf0;
+      --tx:#0f1120;
+      --tx2:#4a5068;
+      --tx3:#7b8198;
+      --bd:rgba(15,17,32,.07);
+      --bd2:rgba(15,17,32,.12);
+      --glass:rgba(255,255,255,.72);
+      --glass-bd:rgba(15,17,32,.08);
+      --cy:#0091a3;
+      --cy-g:rgba(0,145,163,.10);
+      --cy-g2:rgba(0,145,163,.18);
+      --mg:#9333ea;
+      --mg-g:rgba(147,51,234,.10);
+      --ok:#16a34a;
+      --ok-g:rgba(22,163,74,.12);
+      --bad:#dc2626;
+      --warn:#d97706;
+      color-scheme:light;
     }
-    .section-divider::before, .section-divider::after{
-      content:""; flex:1; height:1px; background: var(--bd);
+
+    body{
+      font-family:var(--ui);
+      background:var(--bg);
+      color:var(--tx);
+      min-height:100vh;
+      display:flex;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+      transition:background .35s ease, color .35s ease;
     }
-    .ioc-tools-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 14px;
+
+    /* ═══ AMBIENT BG ═══ */
+    body::before{
+      content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:
+        radial-gradient(900px 600px at 10% 20%, rgba(0,229,255,.06), transparent 60%),
+        radial-gradient(700px 500px at 80% 70%, rgba(192,38,211,.05), transparent 50%),
+        radial-gradient(500px 400px at 50% 0%, rgba(0,229,255,.03), transparent 40%);
+      transition:opacity .35s ease;
     }
-    @media (max-width: 980px){ .ioc-tools-grid{grid-template-columns:1fr} }
-    .ioc-tool-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)), var(--card);
-      border: 1px solid var(--bd);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 14px;
+    [data-theme="light"] body::before,
+    [data-theme="light"]::before{
+      background:
+        radial-gradient(900px 600px at 10% 20%, rgba(0,145,163,.06), transparent 60%),
+        radial-gradient(700px 500px at 80% 70%, rgba(147,51,234,.04), transparent 50%),
+        radial-gradient(500px 400px at 50% 0%, rgba(0,145,163,.03), transparent 40%);
     }
-    .ioc-tool-card h3{ margin: 0 0 4px; font-size: 14px; letter-spacing: .2px; }
-    .ioc-tool-card .desc{
-      font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.4;
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;
+      width:220px;z-index:40;
+      background:var(--s0);
+      border-right:1px solid var(--bd);
+      display:flex;flex-direction:column;
+      padding:20px 0;
+      transition:transform .3s cubic-bezier(.4,0,.2,1), background .3s ease, border-color .3s ease;
     }
-    .ioc-tool-card .example{
-      font-size: 11.5px; color: var(--muted); font-family: var(--mono);
-      background: rgba(255,255,255,.03); border: 1px solid var(--bd);
-      border-radius: 8px; padding: 7px 10px; margin-top: 8px; line-height: 1.7;
+    .sidebar-brand{
+      padding:0 20px 20px;
+      border-bottom:1px solid var(--bd);
     }
-    .ioc-tool-card .example .arrow{ color: var(--accent); }
-    .ioc-tool-card textarea{ min-height: 130px; }
-    .ioc-output{
-      margin-top: 10px;
-      background: #060913;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 12px;
-      padding: 12px;
-      font-family: var(--mono);
-      font-size: 12.5px;
-      line-height: 1.5;
-      min-height: 60px;
-      color: #e6edf3;
-      white-space: pre-wrap;
-      word-break: break-word;
-      overflow: auto;
-      display: none;
+    .sidebar-logo{
+      width:38px;height:38px;border-radius:10px;
+      background:linear-gradient(135deg,var(--cy),var(--mg));
+      display:grid;place-items:center;
+      font-family:var(--mono);font-weight:700;font-size:11px;color:#fff;
+      box-shadow:0 0 24px var(--cy-g2), 0 0 60px var(--cy-g);
+      margin-bottom:12px;
+      letter-spacing:-0.5px;
     }
-    .ioc-counter{
-      display: none;
-      align-items: center;
-      gap: 6px;
-      font-size: 11.5px;
-      color: var(--muted);
-      margin-top: 6px;
+    .sidebar-brand h1{font-size:16px;font-weight:800;letter-spacing:-.3px}
+    .sidebar-brand p{font-size:11px;color:var(--tx3);margin-top:4px;line-height:1.4}
+
+    .sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px}
+    .nav-section{
+      font-size:9.5px;font-weight:700;color:var(--tx3);
+      text-transform:uppercase;letter-spacing:1.2px;
+      padding:12px 12px 6px;
     }
-    .ioc-counter b{ color: var(--text); }
+    .nav-item{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:var(--r);
+      font-size:13px;font-weight:500;
+      color:var(--tx2);cursor:pointer;
+      border:1px solid transparent;
+      background:transparent;width:100%;text-align:left;
+      transition:all .15s ease;
+      font-family:var(--ui);
+    }
+    .nav-item:hover{color:var(--tx);background:var(--s2)}
+    .nav-item.active{
+      color:var(--cy);background:rgba(0,229,255,.06);
+      border-color:rgba(0,229,255,.12);
+      box-shadow:0 0 20px rgba(0,229,255,.05);
+    }
+    .nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+    .nav-item.active svg{opacity:1;color:var(--cy)}
+    .nav-item .badge-count{
+      margin-left:auto;
+      font-size:10px;font-weight:700;font-family:var(--mono);
+      background:var(--s3);padding:2px 7px;border-radius:99px;
+      color:var(--tx3);
+    }
+
+    .sidebar-footer{
+      padding:12px 20px;border-top:1px solid var(--bd);
+      display:flex;align-items:center;gap:8px;
+    }
+    .status-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--cy);
+      box-shadow:0 0 10px var(--cy-g2);
+      animation:blink 2.5s infinite;
+    }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .sidebar-footer span{font-size:10.5px;color:var(--tx3);font-family:var(--mono)}
+
+    /* ═══ MOBILE SIDEBAR ═══ */
+    .sidebar-toggle{
+      display:none;position:fixed;top:12px;left:12px;z-index:60;
+      width:40px;height:40px;border-radius:10px;
+      background:var(--s1);border:1px solid var(--bd2);
+      color:var(--tx);cursor:pointer;
+      place-items:center;
+    }
+    .sidebar-toggle svg{width:20px;height:20px}
+    .sidebar-overlay{
+      display:none;position:fixed;inset:0;z-index:35;
+      background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+    }
+    @media(max-width:860px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-toggle{display:grid}
+      .sidebar-overlay.show{display:block}
+      .main-area{margin-left:0!important}
+    }
+
+    /* ═══ MAIN AREA ═══ */
+    .main-area{
+      margin-left:220px;flex:1;min-height:100vh;
+      position:relative;z-index:1;
+      padding:24px 28px 50px;
+    }
+    @media(max-width:860px){.main-area{padding:60px 16px 40px}}
+
+    /* ═══ PAGE HEADER ═══ */
+    .page-header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+    .page-header h2{font-size:22px;font-weight:800;letter-spacing:-.3px}
+    .page-header .subtitle{font-size:12.5px;color:var(--tx3);margin-top:2px}
+    .kbd-hint{
+      font-family:var(--mono);font-size:10.5px;color:var(--tx3);
+      padding:5px 10px;border-radius:6px;
+      background:var(--s1);border:1px solid var(--bd);
+    }
+
+    /* ═══ SECTION (each page) ═══ */
+    .section{display:none}
+    .section.active{display:block;animation:page-in .3s ease}
+    @keyframes page-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ═══ GLASS CARDS ═══ */
+    .glass{
+      background:var(--glass);
+      backdrop-filter:blur(20px) saturate(1.3);
+      -webkit-backdrop-filter:blur(20px) saturate(1.3);
+      border:1px solid var(--glass-bd);
+      border-radius:var(--r2);
+      overflow:hidden;
+      transition:background .3s ease, border-color .3s ease;
+    }
+    .glass:hover{border-color:rgba(255,255,255,.1)}
+    .glass-head{
+      padding:14px 18px;
+      border-bottom:1px solid var(--bd);
+      display:flex;align-items:center;gap:10px;
+    }
+    .glass-head h3{
+      font-size:13px;font-weight:700;
+      text-transform:uppercase;letter-spacing:.4px;color:var(--tx2);
+    }
+    .glass-head .dot-accent{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--cy);
+      box-shadow:0 0 12px var(--cy-g2);
+    }
+    .glass-body{padding:18px}
+
+    /* ═══ SPLIT LAYOUT ═══ */
+    .split{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+    @media(max-width:960px){.split{grid-template-columns:1fr}}
+
+    /* ═══ FORM ═══ */
+    label{
+      display:block;font-weight:600;font-size:10.5px;
+      color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;
+      margin-bottom:5px;
+    }
+    label:not(:first-child){margin-top:16px}
+    input,textarea,select{
+      width:100%;padding:10px 12px;
+      border-radius:var(--r);
+      border:1px solid var(--bd);
+      background:rgba(255,255,255,.03);
+      color:var(--tx);
+      font-family:var(--mono);font-size:12px;
+      outline:none;
+      transition:border-color .15s,box-shadow .15s;
+    }
+    input:focus,textarea:focus,select:focus{
+      border-color:rgba(0,229,255,.4);
+      box-shadow:0 0 0 3px var(--cy-g);
+    }
+    ::placeholder{color:var(--tx3);opacity:.7}
+    select{cursor:pointer}
+    select option{background:var(--s1);color:var(--tx)}
+    textarea{resize:vertical;min-height:100px;line-height:1.6}
+    .hint{font-size:10.5px;color:var(--tx3);margin-top:4px;line-height:1.4}
+    .row{display:flex;gap:12px}
+    .row>*{flex:1;min-width:0}
+    @media(max-width:600px){.row{flex-direction:column;gap:0}}
+
+    /* ═══ BUTTONS ═══ */
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+    .btn{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:9px 18px;border-radius:var(--r);
+      font-family:var(--ui);font-weight:700;font-size:12px;
+      cursor:pointer;border:1px solid var(--bd2);
+      background:var(--s2);color:var(--tx);
+      transition:all .15s ease;
+      letter-spacing:.2px;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.15)}
+    .btn:active{transform:translateY(0)}
+    .btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+    .btn svg{width:14px;height:14px}
+    .btn-cy{
+      background:linear-gradient(135deg,rgba(0,229,255,.9),rgba(0,180,220,.85));
+      border-color:rgba(0,229,255,.5);
+      color:#050508;font-weight:800;
+      box-shadow:0 0 20px var(--cy-g),0 2px 8px rgba(0,0,0,.3);
+    }
+    .btn-cy:hover{box-shadow:0 0 30px var(--cy-g2),0 4px 12px rgba(0,0,0,.4)}
+    .btn-mg{
+      background:linear-gradient(135deg,rgba(192,38,211,.85),rgba(168,28,192,.8));
+      border-color:rgba(192,38,211,.5);color:#fff;font-weight:800;
+      box-shadow:0 0 16px var(--mg-g);
+    }
+    .btn-ok{
+      background:linear-gradient(135deg,rgba(34,197,94,.9),rgba(16,185,129,.85));
+      border-color:rgba(34,197,94,.5);color:#050508;font-weight:800;
+    }
+
+    /* ═══ TOGGLE GROUP ═══ */
+    .tgl{
+      display:flex;gap:2px;
+      background:rgba(255,255,255,.03);border:1px solid var(--bd);
+      border-radius:var(--r);padding:3px;width:fit-content;margin-top:5px;
+    }
+    .tgl-opt{
+      padding:7px 14px;border-radius:7px;
+      font-family:var(--ui);font-weight:700;font-size:11px;
+      color:var(--tx3);cursor:pointer;border:none;background:transparent;
+      transition:all .15s ease;
+    }
+    .tgl-opt.on{color:var(--cy);background:rgba(0,229,255,.08)}
+
+    /* ═══ OUTPUT ═══ */
+    .output-box{
+      background:rgba(0,0,0,.4);
+      border:1px solid var(--bd);
+      border-radius:var(--r2);
+      padding:18px;min-height:340px;
+      font-family:var(--mono);font-size:11.5px;line-height:1.65;
+      overflow:auto;white-space:pre-wrap;word-break:break-word;
+      color:var(--tx);
+      position:relative;
+    }
+    .output-box.fresh{animation:glow-in .4s ease}
+    @keyframes glow-in{
+      from{box-shadow:inset 0 0 40px var(--cy-g);opacity:.6}
+      to{box-shadow:inset 0 0 0 transparent;opacity:1}
+    }
+    .output-box .empty{color:var(--tx3);font-style:italic;font-family:var(--ui);font-size:13px}
+
+    /* ═══ COUNTERS ═══ */
+    .cbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .cbadge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 12px;border-radius:99px;
+      background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.1);
+      font-family:var(--mono);font-size:10.5px;color:var(--tx2);
+    }
+    .cbadge b{color:var(--cy);font-weight:700}
+
+    /* ═══ IOC TOOLS ═══ */
+    .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:960px){.tools-grid{grid-template-columns:1fr}}
+    .tool-example{
+      font-family:var(--mono);font-size:10.5px;
+      background:rgba(255,255,255,.02);border:1px solid var(--bd);
+      border-radius:8px;padding:10px 12px;margin-bottom:16px;
+      line-height:2;color:var(--tx3);
+    }
+    .tool-example .ar{color:var(--cy);font-weight:700}
+    .ioc-out{
+      display:none;margin-top:12px;
+      background:rgba(0,0,0,.3);border:1px solid var(--bd);
+      border-radius:var(--r);padding:12px;
+      font-family:var(--mono);font-size:11.5px;line-height:1.5;
+      min-height:50px;color:var(--tx);white-space:pre-wrap;word-break:break-word;overflow:auto;
+    }
+    .ioc-cnt{
+      display:none;align-items:center;gap:6px;
+      font-size:10.5px;color:var(--tx3);font-family:var(--mono);margin-top:8px;
+    }
+    .ioc-cnt b{color:var(--cy)}
+
+    /* ═══ LOG TABLE ═══ */
+    .log-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{
+      padding:9px 12px;font-size:11px;text-align:left;
+      vertical-align:top;border-bottom:1px solid var(--bd);
+    }
+    th{
+      color:var(--tx3);font-weight:700;font-size:9.5px;
+      text-transform:uppercase;letter-spacing:.8px;
+      background:rgba(255,255,255,.02);
+      position:sticky;top:0;
+    }
+    td{color:var(--tx2)}
+    td.m{font-family:var(--mono);font-size:10.5px;color:var(--cy)}
+    .log-empty{text-align:center;padding:30px;color:var(--tx3);font-size:12px}
+
+    /* ═══ TOAST ═══ */
+    .toast{
+      position:fixed;bottom:20px;right:20px;max-width:360px;z-index:100;
+      display:flex;align-items:center;gap:10px;
+      padding:12px 18px;border-radius:12px;
+      background:rgba(15,15,28,.92);backdrop-filter:blur(20px);
+      border:1px solid var(--bd2);
+      box-shadow:0 8px 40px rgba(0,0,0,.5);
+      transform:translateY(20px) scale(.96);opacity:0;
+      pointer-events:none;
+      transition:all .3s cubic-bezier(.4,0,.2,1);
+    }
+    .toast.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .t-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .t-dot.ok{background:var(--ok);box-shadow:0 0 12px var(--ok-g)}
+    .t-dot.bad{background:var(--bad);box-shadow:0 0 12px rgba(239,68,68,.2)}
+    .t-dot.warn{background:var(--warn);box-shadow:0 0 12px rgba(245,158,11,.2)}
+    .t-title{font-weight:800;font-size:12.5px}
+    .t-msg{font-size:11px;color:var(--tx2);margin-top:1px;line-height:1.3}
+
+    /* ═══ SCROLLBAR ═══ */
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
+
+    /* ═══ LIGHT THEME OVERRIDES ═══ */
+    [data-theme="light"] .sidebar{background:var(--s1);border-right-color:var(--bd2)}
+    [data-theme="light"] .sidebar-logo{box-shadow:0 0 20px var(--cy-g2)}
+    [data-theme="light"] input,
+    [data-theme="light"] textarea,
+    [data-theme="light"] select{background:var(--s2);border-color:var(--bd2)}
+    [data-theme="light"] .output-box{background:var(--s2);border-color:var(--bd2)}
+    [data-theme="light"] .ioc-out{background:var(--s2);border-color:var(--bd2)}
+    [data-theme="light"] .toast{background:rgba(255,255,255,.94);border-color:var(--bd2)}
+    [data-theme="light"] .tool-example{background:var(--s2);border-color:var(--bd)}
+    [data-theme="light"] .cbadge{background:rgba(0,145,163,.06);border-color:rgba(0,145,163,.12)}
+    [data-theme="light"] th{background:var(--s2)}
+    [data-theme="light"] .nav-item.active{background:rgba(0,145,163,.08);border-color:rgba(0,145,163,.15)}
+    [data-theme="light"] .btn{background:var(--s3);border-color:var(--bd2)}
+    [data-theme="light"] .btn-cy{
+      background:linear-gradient(135deg,rgba(0,145,163,.9),rgba(0,120,140,.85));
+      border-color:rgba(0,145,163,.5);color:#fff;
+    }
+    [data-theme="light"] .btn-mg{
+      background:linear-gradient(135deg,rgba(147,51,234,.85),rgba(126,34,206,.8));
+      border-color:rgba(147,51,234,.5);color:#fff;
+    }
+    [data-theme="light"] .kbd-hint{background:var(--s2)}
+    [data-theme="light"] .tgl{background:var(--s2);border-color:var(--bd2)}
+    [data-theme="light"] .tgl-opt.on{color:var(--cy);background:rgba(0,145,163,.1)}
+    [data-theme="light"] .sidebar-footer{border-top-color:var(--bd2)}
+
+    /* ═══ THEME TOGGLE ═══ */
+    .theme-switch{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 20px;
+      cursor:pointer;
+    }
+    .theme-switch-track{
+      width:42px;height:22px;border-radius:99px;
+      background:var(--s3);border:1px solid var(--bd2);
+      position:relative;transition:background .25s ease;
+      flex-shrink:0;
+    }
+    .theme-switch-thumb{
+      width:16px;height:16px;border-radius:50%;
+      background:var(--cy);
+      box-shadow:0 0 8px var(--cy-g2);
+      position:absolute;top:2px;left:2px;
+      transition:transform .25s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="light"] .theme-switch-thumb{transform:translateX(20px)}
+    .theme-switch-label{
+      font-size:10.5px;color:var(--tx3);font-family:var(--mono);
+      user-select:none;
+    }
   </style>
 </head>
-
 <body>
-<header>
-  <div class="wrap">
-    <h1>Generador de bloqueos IoC</h1>
-    <div class="sub">
-      Herramienta simple para agilizar procesos de bloqueos masivos: genera comandos o CSV listos para copiar y usar.
-    </div>
-    <div class="pill"><span class="dot"></span> Convención: <span class="mini"><b>AS_&lt;IP&gt;</b> para objetos IP</span></div>
+
+<!-- SIDEBAR MOBILE TOGGLE -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Menú">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">IoC</div>
+    <h1>IoC Suite</h1>
+    <p>Herramientas de bloqueo masivo</p>
   </div>
-</header>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Generadores</div>
+    <button class="nav-item active" data-page="fortigate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      FortiGate
+    </button>
+    <button class="nav-item" data-page="paloalto">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Palo Alto
+    </button>
+    <button class="nav-item" data-page="checkpoint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Check Point
+    </button>
 
-<main>
-  <div class="wrap">
-    <div class="grid">
+    <div class="nav-section">Formateadores</div>
+    <button class="nav-item" data-page="defang">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+      Defang → Clean
+    </button>
+    <button class="nav-item" data-page="wildcard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Wildcards
+    </button>
 
-      <section class="card">
-        <h2>Datos</h2>
+    <div class="nav-section">Datos</div>
+    <button class="nav-item" data-page="log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      Registro
+      <span class="badge-count" id="logCount">0</span>
+    </button>
+  </nav>
+  <div class="theme-switch" id="themeSwitch" title="Cambiar tema">
+    <div class="theme-switch-track">
+      <div class="theme-switch-thumb"></div>
+    </div>
+    <span class="theme-switch-label" id="themeLabel">Dark</span>
+  </div>
+  <div class="sidebar-footer">
+    <span class="status-dot"></span>
+    <span>AS_&lt;IP&gt; · objetos IP</span>
+  </div>
+</aside>
 
-        <label>Vendor</label>
-        <div class="vendor-pills" id="vendor">
-          <button type="button" class="pill-btn active" data-vendor="fortigate">FortiGate</button>
-          <button type="button" class="pill-btn" data-vendor="paloalto">Palo Alto</button>
-          <button type="button" class="pill-btn" data-vendor="checkpoint">Check Point (AV CSV)</button>
-        </div>
+<!-- ═══ MAIN ═══ -->
+<div class="main-area">
 
-        <div id="fw-mode">
+  <!-- ══════════════════════════════════════ -->
+  <!-- FORTIGATE -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section active" id="sec-fortigate">
+    <div class="page-header">
+      <div>
+        <h2>FortiGate</h2>
+        <div class="subtitle">Genera comandos CLI para address objects + address group</div>
+      </div>
+      <div class="kbd-hint">Ctrl+Enter = generar</div>
+    </div>
+    <div class="split">
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Datos</h3></div>
+        <div class="glass-body">
           <label>IPs (IPv4) — una por línea</label>
-          <textarea id="ips" placeholder="1.2.3.4&#10;5.6.7.8&#10;9.10.11.12"></textarea>
-          <div class="hint">Acepta formatos "defang" como <b>104[.]28.212.115</b> y elimina duplicados.</div>
-
+          <textarea id="fgIps" placeholder="1.2.3.4 5.6.7.8, 9.10.11.12; 104[.]28.212.115&#10;También acepta una por línea o cualquier separador"></textarea>
+          <div class="hint">Acepta cualquier separador (espacio, coma, ; tab, salto de línea) · defang · deduplica y ordena</div>
           <label>Comentario</label>
-          <textarea id="comment" placeholder="CS0026629 - scanning / brute force / etc."></textarea>
-
+          <textarea id="fgComment" rows="2" style="min-height:52px" placeholder="CS0026629 - scanning / brute force"></textarea>
           <label>Grupo de bloqueo</label>
-          <input id="group" placeholder="Ej: GRP_BLOCK_IOC / IOC_BLOCK / etc." />
-          <div class="hint">No se guarda en ningún lado. Lo escribes solo cuando lo usas.</div>
+          <input id="fgGroup" placeholder="GRP_BLOCK_IOC / IOC_BLOCK">
+          <div class="actions">
+            <button class="btn btn-cy" id="fgGen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Generar
+            </button>
+            <button class="btn" id="fgCopy" disabled>Copiar salida</button>
+          </div>
+        </div>
+      </div>
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Salida CLI</h3></div>
+        <div class="glass-body">
+          <div class="output-box" id="fgOut"><span class="empty">Ingresa IPs y genera la salida…</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <div class="row" id="pa-extra" style="display:none;">
+  <!-- ══════════════════════════════════════ -->
+  <!-- PALO ALTO -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section" id="sec-paloalto">
+    <div class="page-header">
+      <div>
+        <h2>Palo Alto</h2>
+        <div class="subtitle">Genera comandos set para address objects + address group</div>
+      </div>
+      <div class="kbd-hint">Ctrl+Enter = generar</div>
+    </div>
+    <div class="split">
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Datos</h3></div>
+        <div class="glass-body">
+          <label>IPs (IPv4) — una por línea</label>
+          <textarea id="paIps" placeholder="1.2.3.4 5.6.7.8, 9.10.11.12; 104[.]28.212.115"></textarea>
+          <div class="hint">Cualquier separador · defang · deduplica y ordena</div>
+          <label>Comentario</label>
+          <textarea id="paComment" rows="2" style="min-height:52px" placeholder="CS0026629 - scanning / brute force"></textarea>
+          <label>Grupo de bloqueo</label>
+          <input id="paGroup" placeholder="GRP_BLOCK_IOC">
+          <div class="row">
             <div>
               <label>VSYS</label>
-              <input id="vsys" value="vsys1" />
+              <input id="paVsys" value="vsys1">
             </div>
             <div>
               <label>Incluir commit?</label>
-              <div class="vendor-pills" style="margin-top:6px">
-                <button type="button" class="pill-btn active" id="commitYes">Si</button>
-                <button type="button" class="pill-btn" id="commitNo">No</button>
+              <div class="tgl">
+                <button class="tgl-opt on" id="paCommitY">Sí</button>
+                <button class="tgl-opt" id="paCommitN">No</button>
               </div>
             </div>
           </div>
-
           <div class="actions">
-            <button class="primary" id="genFw">Generar</button>
-            <button id="copyFw" disabled>Copiar salida</button>
+            <button class="btn btn-cy" id="paGen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Generar
+            </button>
+            <button class="btn" id="paCopy" disabled>Copiar salida</button>
           </div>
         </div>
+      </div>
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Salida CLI</h3></div>
+        <div class="glass-body">
+          <div class="output-box" id="paOut"><span class="empty">Ingresa IPs y genera la salida…</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <div id="cp-mode" style="display:none;">
+  <!-- ══════════════════════════════════════ -->
+  <!-- CHECK POINT -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section" id="sec-checkpoint">
+    <div class="page-header">
+      <div>
+        <h2>Check Point</h2>
+        <div class="subtitle">Genera CSV de IoC para carga masiva (AV / IPS / Anti-Bot)</div>
+      </div>
+      <div class="kbd-hint">Ctrl+Enter = generar</div>
+    </div>
+    <div class="split">
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Datos</h3></div>
+        <div class="glass-body">
           <div class="row">
-            <div>
-              <label>Confianza (Confidence)</label>
-              <select id="cpConfidence">
-                <option value="low">low</option>
-                <option value="medium" selected>medium</option>
-                <option value="high">high</option>
-              </select>
-            </div>
-            <div>
-              <label>Severidad (Severity)</label>
-              <select id="cpSeverity">
-                <option value="low">low</option>
-                <option value="medium" selected>medium</option>
-                <option value="high">high</option>
-              </select>
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <label>Producto/Blade (Product)</label>
-              <select id="cpProduct">
-                <option value="AV" selected>Anti-Virus (AV)</option>
-                <option value="IPS">IPS</option>
-                <option value="AB">Anti-Bot (AB)</option>
-              </select>
-            </div>
-            <div>
-              <label>Comentario (Comment)</label>
-              <input id="cpComment" placeholder="IOCs_YYYYMMDD o fuente" />
-            </div>
-          </div>
-          <div class="counterbar">
-            <span class="counter"><b id="nIp">0</b> IP</span>
-            <span class="counter"><b id="nDom">0</b> dominios</span>
-            <span class="counter"><b id="nUrl">0</b> URLs</span>
-            <span class="counter"><b id="nHash">0</b> hashes</span>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <div>
-              <label>IPs</label>
-              <textarea id="cpIps" placeholder="83.44.55.66&#10;104[.]28.212.115"></textarea>
-            </div>
-            <div>
-              <label>Dominios</label>
-              <textarea id="cpDomains" placeholder="malicioso.com&#10;phish-login.net"></textarea>
-            </div>
+            <div><label>Confianza</label><select id="cpConf"><option value="low">low</option><option value="medium" selected>medium</option><option value="high">high</option></select></div>
+            <div><label>Severidad</label><select id="cpSev"><option value="low">low</option><option value="medium" selected>medium</option><option value="high">high</option></select></div>
           </div>
           <div class="row">
-            <div>
-              <label>URLs</label>
-              <textarea id="cpUrls" placeholder="hxxps://malicioso[.]com/malware.exe"></textarea>
-            </div>
-            <div>
-              <label>Hashes (MD5 y/o SHA256)</label>
-              <textarea id="cpHashes" placeholder="d41d8cd98f00b204e9800998ecf8427e&#10;a3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42"></textarea>
-            </div>
+            <div><label>Producto</label><select id="cpProd"><option value="AV" selected>Anti-Virus</option><option value="IPS">IPS</option><option value="AB">Anti-Bot</option></select></div>
+            <div><label>Comentario</label><input id="cpCom" placeholder="IOCs_YYYYMMDD"></div>
+          </div>
+          <div class="cbar">
+            <span class="cbadge"><b id="nIp">0</b> IP</span>
+            <span class="cbadge"><b id="nDom">0</b> dom</span>
+            <span class="cbadge"><b id="nUrl">0</b> URL</span>
+            <span class="cbadge"><b id="nHash">0</b> hash</span>
           </div>
           <div class="row">
-            <div>
-              <label>Prefijo para UNIQ-NAME</label>
-              <input id="cpPrefix" value="observ" />
-            </div>
-            <div>
-              <label>Generacion de UNIQ-NAME</label>
-              <select id="cpUniqMode">
-                <option value="seq" selected>Secuencial (observ1, observ2...)</option>
-                <option value="ioc">Basado en IoC (observ_&lt;ioc&gt;)</option>
-              </select>
-            </div>
+            <div><label>IPs</label><textarea id="cpIps" placeholder="83.44.55.66 104[.]28.212.115, 10.0.0.1"></textarea></div>
+            <div><label>Dominios</label><textarea id="cpDom" placeholder="malicioso.com, phish-login.net evil.org"></textarea></div>
           </div>
           <div class="row">
-            <div>
-              <label>Eliminar duplicados</label>
-              <select id="cpDedupe">
-                <option value="yes" selected>Si (recomendado)</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-            <div>
-              <label>Formato de salida</label>
-              <select id="cpFormat">
-                <option value="csv" selected>CSV (una linea por IoC)</option>
-              </select>
-            </div>
+            <div><label>URLs</label><textarea id="cpUrl" placeholder="hxxps://malicioso[.]com/path, hxxp://evil[.]net/bin"></textarea></div>
+            <div><label>Hashes</label><textarea id="cpHash" placeholder="d41d8cd98f00b204e9800998ecf8427e a3c9d1f7..."></textarea></div>
+          </div>
+          <div class="row">
+            <div><label>Prefijo UNIQ</label><input id="cpPfx" value="observ"></div>
+            <div><label>Modo UNIQ</label><select id="cpUniq"><option value="seq" selected>Secuencial</option><option value="ioc">Basado en IoC</option></select></div>
+          </div>
+          <div class="row">
+            <div><label>Deduplicar</label><select id="cpDedup"><option value="yes" selected>Sí</option><option value="no">No</option></select></div>
+            <div><label>Formato</label><select><option>CSV</option></select></div>
           </div>
           <div class="actions">
-            <button class="primary" id="genCp">Generar CSV</button>
-            <button id="copyCp" disabled>Copiar</button>
-            <button id="dlCp" disabled>Descargar CSV</button>
-            <button id="openCp" disabled>Abrir en pestana</button>
-            <button class="success" id="sampleCp">Cargar ejemplo</button>
+            <button class="btn btn-cy" id="cpGen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Generar CSV
+            </button>
+            <button class="btn" id="cpCopy" disabled>Copiar</button>
+            <button class="btn" id="cpDl" disabled>Descargar</button>
+            <button class="btn" id="cpOpen" disabled>Abrir</button>
+            <button class="btn btn-ok" id="cpSample">Ejemplo</button>
           </div>
-          <div class="hint">Atajo: <b>Ctrl + Enter</b> para generar.</div>
         </div>
-      </section>
-
-      <section class="card">
-        <h2>Salida</h2>
-        <pre id="out">Elige vendor y genera la salida.</pre>
-        <div class="note" id="note"></div>
-      </section>
-
-    </div>
-
-    <!-- NUEVA SECCION: Formateador de IoCs -->
-    <div class="section-divider">Formateador de IoCs</div>
-
-    <div class="ioc-tools-grid">
-
-      <!-- Herramienta 1: Defang cleaner -->
-      <div class="ioc-tool-card">
-        <h3>Eliminar corchetes (Defang &rarr; Clean)</h3>
-        <div class="desc">
-          Limpia notacion defang de dominios, IPs y URLs. Reemplaza <code>[.]</code> por <code>.</code> y normaliza esquemas <code>hxxp</code>.
-        </div>
-        <div class="example">
-          <code>104[.]28[.]212[.]115</code> <span class="arrow">&rarr;</span> <code>104.28.212.115</code><br>
-          <code>hxxps://malware[.]com/path</code> <span class="arrow">&rarr;</span> <code>https://malware.com/path</code>
-        </div>
-
-        <label>IoCs con corchetes &mdash; uno por linea</label>
-        <textarea id="defangInput" placeholder="104[.]28[.]212[.]115&#10;hxxps://malware[.]com/path&#10;evil[.]domain[.]net"></textarea>
-
-        <div class="actions">
-          <button class="primary" id="defangBtn">Modificar</button>
-          <button id="defangCopy" disabled>Copiar resultado</button>
-          <button id="defangClear">Limpiar campos</button>
-        </div>
-
-        <div class="ioc-counter" id="defangCounter">
-          <b id="defangCount">0</b> IoCs procesados
-        </div>
-        <div class="ioc-output" id="defangOutput"></div>
       </div>
-
-      <!-- Herramienta 2: Wildcard formatter -->
-      <div class="ioc-tool-card">
-        <h3>Formateador de Wildcards</h3>
-        <div class="desc">
-          Convierte dominios al formato wildcard para McAfee Proxy. Acepta entradas con o sin notación defang, con o sin asterisco previo.
+      <div class="glass">
+        <div class="glass-head"><span class="dot-accent"></span><h3>Salida CSV</h3></div>
+        <div class="glass-body">
+          <div class="output-box" id="cpOut"><span class="empty">Completa los campos y genera el CSV…</span></div>
         </div>
-        <div class="example">
-          <code>*.gestioncurso[.]cl</code> <span class="arrow">&rarr;</span> <code>*gestioncurso.cl*</code><br>
-          <code>MALWARE[.]DOMAIN[.]COM</code> <span class="arrow">&rarr;</span> <code>*malware.domain.com*</code>
-        </div>
-
-        <label>Wildcards &mdash; una por linea</label>
-        <textarea id="wildcardInput" placeholder="*.gestioncurso[.]cl&#10;*.goodvibrationsmusic[.]co[.]uk&#10;*.mail[.]gw"></textarea>
-
-        <div class="actions">
-          <button class="primary" id="wildcardBtn">Formatear</button>
-          <button id="wildcardCopy" disabled>Copiar resultado</button>
-          <button id="wildcardClear">Limpiar campos</button>
-        </div>
-
-        <div class="ioc-counter" id="wildcardCounter">
-          <b id="wildcardCount">0</b> wildcards procesadas
-        </div>
-        <div class="ioc-output" id="wildcardOutput"></div>
       </div>
-
     </div>
-
-    <section class="card" style="margin-top:14px;">
-      <h2>Registro local (solo en este navegador)</h2>
-      <div class="sub">No sube nada a internet. Util para evidencia rapida si quieres.</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th><th>Vendor</th><th>Tipo</th><th>IoC</th>
-            <th>Grupo</th><th>Comentario</th><th>Extra</th>
-          </tr>
-        </thead>
-        <tbody id="log"></tbody>
-      </table>
-    </section>
   </div>
-</main>
 
-<div id="toast" class="toast" aria-live="polite">
-  <span id="badge" class="badge ok"></span>
-  <div>
-    <div id="toastTitle" class="t">OK</div>
-    <div id="toastMsg" class="m">-</div>
+  <!-- ══════════════════════════════════════ -->
+  <!-- DEFANG CLEANER -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section" id="sec-defang">
+    <div class="page-header">
+      <div>
+        <h2>Defang → Clean</h2>
+        <div class="subtitle">Limpia notación defang de dominios, IPs y URLs</div>
+      </div>
+    </div>
+    <div class="glass" style="max-width:680px">
+      <div class="glass-body">
+        <div class="tool-example">
+          <code>104[.]28[.]212[.]115</code> <span class="ar">→</span> <code>104.28.212.115</code><br>
+          <code>hxxps://malware[.]com/path</code> <span class="ar">→</span> <code>https://malware.com/path</code>
+        </div>
+        <label>IoCs con corchetes — uno por línea</label>
+        <textarea id="dfIn" placeholder="104[.]28[.]212[.]115 hxxps://malware[.]com/path, evil[.]domain[.]net; otro[.]ioc[.]com"></textarea>
+        <div class="actions">
+          <button class="btn btn-cy" id="dfBtn">Limpiar</button>
+          <button class="btn" id="dfCopy" disabled>Copiar</button>
+          <button class="btn" id="dfClear">Limpiar campos</button>
+        </div>
+        <div class="ioc-cnt" id="dfCnt"><b id="dfN">0</b> IoCs procesados</div>
+        <div class="ioc-out" id="dfOut"></div>
+      </div>
+    </div>
   </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WILDCARD FORMATTER -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section" id="sec-wildcard">
+    <div class="page-header">
+      <div>
+        <h2>Formateador Wildcards</h2>
+        <div class="subtitle">Convierte dominios al formato wildcard para McAfee Proxy</div>
+      </div>
+    </div>
+    <div class="glass" style="max-width:680px">
+      <div class="glass-body">
+        <div class="tool-example">
+          <code>*.gestioncurso[.]cl</code> <span class="ar">→</span> <code>*gestioncurso.cl*</code><br>
+          <code>MALWARE[.]DOMAIN[.]COM</code> <span class="ar">→</span> <code>*malware.domain.com*</code>
+        </div>
+        <label>Wildcards — una por línea</label>
+        <textarea id="wcIn" placeholder="*.gestioncurso[.]cl *.goodvibrationsmusic[.]co[.]uk, *.mail[.]gw"></textarea>
+        <div class="actions">
+          <button class="btn btn-mg" id="wcBtn">Formatear</button>
+          <button class="btn" id="wcCopy" disabled>Copiar</button>
+          <button class="btn" id="wcClear">Limpiar campos</button>
+        </div>
+        <div class="ioc-cnt" id="wcCnt"><b id="wcN">0</b> wildcards</div>
+        <div class="ioc-out" id="wcOut"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- LOG -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section" id="sec-log">
+    <div class="page-header">
+      <div>
+        <h2>Registro local</h2>
+        <div class="subtitle">Solo en este navegador · no sube nada a internet</div>
+      </div>
+      <button class="btn" id="logClear">Limpiar registro</button>
+    </div>
+    <div class="glass">
+      <div class="glass-body" style="padding:0">
+        <div class="log-wrap" style="max-height:520px;overflow:auto">
+          <table>
+            <thead><tr><th>Fecha</th><th>Vendor</th><th>Tipo</th><th>IoC</th><th>Grupo</th><th>Comentario</th><th>Extra</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-area -->
+
+<!-- TOAST -->
+<div id="toast" class="toast">
+  <span id="tDot" class="t-dot ok"></span>
+  <div><div id="tTitle" class="t-title">OK</div><div id="tMsg" class="t-msg">-</div></div>
 </div>
 
 <script>
-  // ---------- Toast ----------
-  const toastEl = document.getElementById("toast");
-  const badgeEl = document.getElementById("badge");
-  const toastTitleEl = document.getElementById("toastTitle");
-  const toastMsgEl = document.getElementById("toastMsg");
-  let toastTimer = null;
-  function toast(type, title, msg){
-    badgeEl.className = "badge " + (type || "ok");
-    toastTitleEl.textContent = title;
-    toastMsgEl.textContent = msg;
-    toastEl.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>toastEl.classList.remove("show"), 2400);
+(function(){
+"use strict";
+
+/* ═══ THEME TOGGLE ═══ */
+const root=document.documentElement;
+const themeSwitch=document.getElementById("themeSwitch");
+const themeLabel=document.getElementById("themeLabel");
+function setTheme(t){
+  root.setAttribute("data-theme",t);
+  themeLabel.textContent=t==="light"?"Light":"Dark";
+  localStorage.setItem("ioc_theme",t);
+}
+themeSwitch.addEventListener("click",()=>{
+  setTheme(root.getAttribute("data-theme")==="light"?"dark":"light");
+});
+const savedTheme=localStorage.getItem("ioc_theme");
+if(savedTheme)setTheme(savedTheme);
+
+/* ═══ TOAST ═══ */
+const toastEl=document.getElementById("toast"),tDot=document.getElementById("tDot"),
+  tTitle=document.getElementById("tTitle"),tMsg=document.getElementById("tMsg");
+let tTimer=null;
+function toast(type,title,msg){
+  tDot.className="t-dot "+(type||"ok");tTitle.textContent=title;tMsg.textContent=msg;
+  toastEl.classList.add("show");clearTimeout(tTimer);
+  tTimer=setTimeout(()=>toastEl.classList.remove("show"),2600);
+}
+
+/* ═══ SIDEBAR NAV ═══ */
+const navItems=document.querySelectorAll(".nav-item[data-page]");
+const sections=document.querySelectorAll(".section");
+const sidebar=document.getElementById("sidebar");
+const sToggle=document.getElementById("sidebarToggle");
+const sOverlay=document.getElementById("sidebarOverlay");
+
+let currentPage="fortigate";
+
+function goTo(page){
+  currentPage=page;
+  navItems.forEach(n=>n.classList.toggle("active",n.dataset.page===page));
+  sections.forEach(s=>{
+    const match=s.id==="sec-"+page;
+    s.classList.toggle("active",match);
+  });
+  // close mobile sidebar
+  sidebar.classList.remove("open");sOverlay.classList.remove("show");
+}
+navItems.forEach(n=>n.addEventListener("click",()=>goTo(n.dataset.page)));
+sToggle.addEventListener("click",()=>{sidebar.classList.toggle("open");sOverlay.classList.toggle("show")});
+sOverlay.addEventListener("click",()=>{sidebar.classList.remove("open");sOverlay.classList.remove("show")});
+
+/* ═══ HELPERS ═══ */
+function escQ(s){return(s||"").replaceAll('"','""')}
+function pad2(n){return String(n).padStart(2,"0")}
+function nowLocal(){const d=new Date();return`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`}
+function norm(s){
+  return(s||"").trim().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".")
+    .replace(/\s*\.\s*/g,".").replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://").replace(/\s+/g," ");
+}
+function validIP(ip){const m=ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);if(!m)return false;return ip.split(".").every(o=>+o>=0&&+o<=255)}
+
+// Smart tokenizer: splits on newlines, commas, semicolons, tabs, and whitespace
+// For URLs (mode="url"), only splits on newlines, commas, semicolons, tabs (preserves paths)
+function tokenize(text, mode){
+  if(!text) return [];
+  // First normalize defang brackets before splitting
+  let t = text.replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");
+  let tokens;
+  if(mode === "url"){
+    // URLs: split on newline, comma, semicolon, tab — NOT spaces (URLs have paths)
+    tokens = t.split(/[\n\r,;\t]+/);
+  } else {
+    // Everything else: split on any common delimiter
+    tokens = t.split(/[\n\r,;\t\s]+/);
   }
+  return tokens.map(s => s.trim()).filter(Boolean);
+}
 
-  // ---------- Common UI ----------
-  const outEl = document.getElementById("out");
-  const noteEl = document.getElementById("note");
-  let vendorValue = "fortigate";
-  const vendorButtons = document.querySelectorAll(".pill-btn[data-vendor]");
-  const fwMode = document.getElementById("fw-mode");
-  const cpMode = document.getElementById("cp-mode");
-  const paExtra = document.getElementById("pa-extra");
-  const vsysEl = document.getElementById("vsys");
-  const commitYesBtn = document.getElementById("commitYes");
-  const commitNoBtn = document.getElementById("commitNo");
-  let doCommit = true;
+// Parse and normalize tokens, deduplicate, sort
+function pTokens(text, mode){
+  const raw = tokenize(text, mode);
+  return raw.map(s => norm(s)).filter(Boolean);
+}
 
-  function setCommit(v){
-    doCommit = v;
-    if(v){ commitYesBtn.classList.add("active"); commitNoBtn.classList.remove("active"); }
-    else { commitYesBtn.classList.remove("active"); commitNoBtn.classList.add("active"); }
-  }
-  commitYesBtn.addEventListener("click", ()=>setCommit(true));
-  commitNoBtn.addEventListener("click", ()=>setCommit(false));
-  setCommit(true);
+// Legacy compat - still used internally
+function pLines(t){return pTokens(t)}
 
-  function setVendor(v){
-    vendorValue = v;
-    const isCp = (v === "checkpoint");
-    fwMode.style.display = isCp ? "none" : "";
-    cpMode.style.display = isCp ? "" : "none";
-    paExtra.style.display = (v === "paloalto") ? "" : "none";
-    if(isCp){
-      noteEl.textContent = "Check Point: genera CSV de IoC (blade/product) para carga masiva.";
-      outEl.textContent = "Completa los campos y presiona Generar CSV.";
-      refreshCounters();
-    } else {
-      noteEl.textContent = "";
-      outEl.textContent = "Elige vendor y genera la salida.";
+function dedup(a){const s=new Set,o=[];for(const x of a){const k=x.toLowerCase();if(s.has(k))continue;s.add(k);o.push(x)}return o}
+function sortIPs(arr){
+  return arr.slice().sort((a,b)=>{
+    const pa=a.split(".").map(Number), pb=b.split(".").map(Number);
+    for(let i=0;i<4;i++){if(pa[i]!==pb[i])return pa[i]-pb[i]}return 0;
+  });
+}
+function sortAlpha(arr){return arr.slice().sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()))}
+
+function objN(ip){return"AS_"+ip}
+function escH(s){return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
+
+function parseIPs(text){
+  const tokens=pTokens(text),ips=[],bad=[],seen=new Set();
+  for(const raw of tokens){const l=norm(raw),k=l.toLowerCase();if(seen.has(k))continue;seen.add(k);if(validIP(l))ips.push(l);else bad.push(l)}
+  return{ips:sortIPs(ips),bad};
+}
+
+/* ═══ LOG ═══ */
+const LOG_KEY="ioc_suite_log_v2";
+const logBody=document.getElementById("logBody");
+const logCountEl=document.getElementById("logCount");
+function loadLog(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||"[]")}catch{return[]}}
+function saveLog(r){localStorage.setItem(LOG_KEY,JSON.stringify(r))}
+function renderLog(){
+  const rows=loadLog();
+  logCountEl.textContent=String(rows.length);
+  if(!rows.length){logBody.innerHTML='<tr><td colspan="7" class="log-empty">Sin registros</td></tr>';return}
+  logBody.innerHTML="";
+  rows.slice(-300).reverse().forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${escH(r.date)}</td><td>${escH(r.vendor)}</td><td>${escH(r.type)}</td><td class="m">${escH(r.ioc)}</td><td>${escH(r.group||"-")}</td><td>${escH(r.comment||"-")}</td><td>${escH(r.extra||"-")}</td>`;
+    logBody.appendChild(tr);
+  });
+}
+function addLog(o){const rows=loadLog();rows.push({date:nowLocal(),vendor:o.vendor||"-",type:o.type||"-",ioc:o.ioc||"-",group:o.group||"",comment:o.comment||"",extra:o.extra||""});saveLog(rows);renderLog()}
+renderLog();
+document.getElementById("logClear").addEventListener("click",()=>{if(confirm("¿Limpiar todo el registro?")){localStorage.removeItem(LOG_KEY);renderLog();toast("ok","Limpio","Registro borrado.")}});
+
+/* ═══ FORTIGATE ═══ */
+const fgIps=document.getElementById("fgIps"),fgComment=document.getElementById("fgComment"),fgGroup=document.getElementById("fgGroup"),
+  fgOut=document.getElementById("fgOut"),fgGen=document.getElementById("fgGen"),fgCopy=document.getElementById("fgCopy");
+
+function genFG(ips,comment,group){
+  const a=["config firewall address"];
+  for(const ip of ips){const n=objN(ip);a.push(`    edit "${n}"`,`        set subnet ${ip} 255.255.255.255`,`        set comment "${comment.replaceAll('"','\\"')}"`,`    next`)}
+  a.push("end","","config firewall addrgrp",`    edit "${group}"`);
+  for(const ip of ips)a.push(`        append member "${objN(ip)}"`);
+  a.push("    next","end");return a.join("\n");
+}
+fgGen.addEventListener("click",()=>{
+  try{
+    const{ips,bad}=parseIPs(fgIps.value);
+    const c=(fgComment.value||"").trim(),g=(fgGroup.value||"").trim();
+    if(!ips.length)throw new Error("No hay IPs válidas.");
+    if(!c||!g)throw new Error("Falta comentario o grupo.");
+    if(bad.length)toast("warn","Aviso",`Ignoradas: ${bad.slice(0,4).join(", ")}${bad.length>4?" …":""}`);
+    fgOut.textContent=genFG(ips,c,g);fgOut.classList.remove("fresh");void fgOut.offsetWidth;fgOut.classList.add("fresh");
+    fgCopy.disabled=false;toast("ok","Generado",`${ips.length} IPs.`);
+    ips.forEach(ip=>addLog({vendor:"fortigate",type:"IP",ioc:ip,group:g,comment:c}));
+  }catch(e){fgOut.innerHTML='<span class="empty">—</span>';fgCopy.disabled=true;toast("bad","Error",e.message)}
+});
+fgCopy.addEventListener("click",()=>clip(fgOut.textContent));
+
+/* ═══ PALO ALTO ═══ */
+const paIps=document.getElementById("paIps"),paComment=document.getElementById("paComment"),paGroup=document.getElementById("paGroup"),
+  paVsys=document.getElementById("paVsys"),paOut=document.getElementById("paOut"),paGen=document.getElementById("paGen"),paCopy=document.getElementById("paCopy");
+let paCommit=true;
+const paCommitY=document.getElementById("paCommitY"),paCommitN=document.getElementById("paCommitN");
+function setPaCommit(v){paCommit=v;paCommitY.classList.toggle("on",v);paCommitN.classList.toggle("on",!v)}
+paCommitY.addEventListener("click",()=>setPaCommit(true));
+paCommitN.addEventListener("click",()=>setPaCommit(false));
+
+function genPA(ips,comment,group,vsys,commit){
+  const l=[];
+  for(const ip of ips)l.push(`set vsys ${vsys} address ${objN(ip)} ip-netmask ${ip}/32 description "${comment.replaceAll('"','\\"')}"`);
+  for(const ip of ips)l.push(`set vsys ${vsys} address-group ${group} static ${objN(ip)}`);
+  if(commit)l.push("commit");return l.join("\n");
+}
+paGen.addEventListener("click",()=>{
+  try{
+    const{ips,bad}=parseIPs(paIps.value);
+    const c=(paComment.value||"").trim(),g=(paGroup.value||"").trim(),v=(paVsys.value.trim()||"vsys1");
+    if(!ips.length)throw new Error("No hay IPs válidas.");
+    if(!c||!g)throw new Error("Falta comentario o grupo.");
+    if(bad.length)toast("warn","Aviso",`Ignoradas: ${bad.slice(0,4).join(", ")}`);
+    paOut.textContent=genPA(ips,c,g,v,paCommit);paOut.classList.remove("fresh");void paOut.offsetWidth;paOut.classList.add("fresh");
+    paCopy.disabled=false;toast("ok","Generado",`${ips.length} IPs.`);
+    const extra=`vsys=${v} commit=${paCommit?"yes":"no"}`;
+    ips.forEach(ip=>addLog({vendor:"paloalto",type:"IP",ioc:ip,group:g,comment:c,extra}));
+  }catch(e){paOut.innerHTML='<span class="empty">—</span>';paCopy.disabled=true;toast("bad","Error",e.message)}
+});
+paCopy.addEventListener("click",()=>clip(paOut.textContent));
+
+/* ═══ CHECK POINT ═══ */
+const cpConf=document.getElementById("cpConf"),cpSev=document.getElementById("cpSev"),cpProd=document.getElementById("cpProd"),
+  cpCom=document.getElementById("cpCom"),cpIps=document.getElementById("cpIps"),cpDom=document.getElementById("cpDom"),
+  cpUrl=document.getElementById("cpUrl"),cpHash=document.getElementById("cpHash"),cpPfx=document.getElementById("cpPfx"),
+  cpUniq=document.getElementById("cpUniq"),cpDedup=document.getElementById("cpDedup"),
+  cpOut=document.getElementById("cpOut"),cpGen=document.getElementById("cpGen"),cpCopyB=document.getElementById("cpCopy"),
+  cpDl=document.getElementById("cpDl"),cpOpen=document.getElementById("cpOpen"),cpSample=document.getElementById("cpSample"),
+  nIpE=document.getElementById("nIp"),nDomE=document.getElementById("nDom"),nUrlE=document.getElementById("nUrl"),nHashE=document.getElementById("nHash");
+
+function sanUniq(s){return s.replaceAll("://","_").replaceAll("/","_").replaceAll(".","_").replaceAll(":","_").replaceAll("?","_").replaceAll("&","_").replaceAll("=","_").replaceAll("@","_").replaceAll("#","_").replaceAll("%","_").replaceAll("+","_").replaceAll(" ","_").replace(/[^a-zA-Z0-9_\-]/g,"_").slice(0,64)}
+function hashType(h){const x=norm(h).trim();if(/^[a-fA-F0-9]{32}$/.test(x))return"MD5";if(/^[a-fA-F0-9]{64}$/.test(x))return"SHA256";return"HASH"}
+function refreshCP(){
+  let i=pTokens(cpIps.value).filter(validIP),d=pTokens(cpDom.value),u=pTokens(cpUrl.value,"url"),h=pTokens(cpHash.value);
+  if(cpDedup.value==="yes"){i=dedup(i);d=dedup(d);u=dedup(u);h=dedup(h)}
+  nIpE.textContent=i.length;nDomE.textContent=d.length;nUrlE.textContent=u.length;nHashE.textContent=h.length;
+}
+[cpIps,cpDom,cpUrl,cpHash,cpDedup].forEach(e=>{e.addEventListener("input",refreshCP);e.addEventListener("change",refreshCP)});
+
+function buildCP(){
+  const conf=cpConf.value,sev=cpSev.value,prod=cpProd.value,
+    com=(cpCom.value||"").trim()||`IOCs_${new Date().toISOString().slice(0,10)}`;
+  let i=pTokens(cpIps.value).filter(validIP),d=pTokens(cpDom.value),u=pTokens(cpUrl.value,"url"),h=pTokens(cpHash.value);
+  if(cpDedup.value==="yes"){i=dedup(i);d=dedup(d);u=dedup(u);h=dedup(h)}
+  i=sortIPs(i);d=sortAlpha(d);u=sortAlpha(u);h=sortAlpha(h);
+  const rows=[],pfx=(cpPfx.value||"ioc").trim()||"ioc";let seq=1;
+  function un(ioc){return cpUniq.value==="seq"?`${pfx}${seq++}`:`${pfx}_${sanUniq(ioc)}`}
+  function push(ioc,t){rows.push([un(ioc),ioc,t,conf,sev,prod,com])}
+  i.forEach(x=>push(x,"IP"));d.forEach(x=>push(x,"DOMAIN"));u.forEach(x=>push(x,"URL"));h.forEach(x=>push(x,hashType(x)));
+  if(!rows.length)throw new Error("No hay IoCs.");
+  const csv=rows.map(r=>r.map(v=>`"${escQ(String(v))}"`).join(",")).join("\n");
+  return{csv,count:rows.length,ips:i,dom:d,url:u,hsh:h,meta:{conf,sev,prod,com}};
+}
+function dlText(fn,t){const b=new Blob([t],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
+
+cpGen.addEventListener("click",()=>{
+  try{
+    const{csv,count,ips,dom,url,hsh,meta}=buildCP();
+    cpOut.textContent=csv;cpOut.classList.remove("fresh");void cpOut.offsetWidth;cpOut.classList.add("fresh");
+    cpCopyB.disabled=false;cpDl.disabled=false;cpOpen.disabled=false;
+    toast("ok","CSV listo",`${count} IoCs.`);
+    const extra=`product=${meta.prod} conf=${meta.conf} sev=${meta.sev}`;
+    ips.forEach(v=>addLog({vendor:"checkpoint",type:"IP",ioc:v,comment:meta.com,extra}));
+    dom.forEach(v=>addLog({vendor:"checkpoint",type:"DOMAIN",ioc:v,comment:meta.com,extra}));
+    url.forEach(v=>addLog({vendor:"checkpoint",type:"URL",ioc:v,comment:meta.com,extra}));
+    hsh.forEach(v=>addLog({vendor:"checkpoint",type:hashType(v),ioc:norm(v),comment:meta.com,extra}));
+  }catch(e){cpOut.innerHTML='<span class="empty">—</span>';cpCopyB.disabled=true;cpDl.disabled=true;cpOpen.disabled=true;toast("bad","Error",e.message)}
+});
+cpCopyB.addEventListener("click",()=>clip(cpOut.textContent));
+cpDl.addEventListener("click",()=>{const n=`checkpoint_iocs_${new Date().toISOString().slice(0,10)}.csv`;dlText(n,cpOut.textContent||"");toast("ok","Descargado",n)});
+cpOpen.addEventListener("click",()=>{const w=window.open("","_blank");if(!w){toast("warn","Ojo","Popup bloqueado.");return}const e=(cpOut.textContent||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");w.document.write(`<pre style="white-space:pre-wrap;font-family:monospace;padding:20px">${e}</pre>`);w.document.close()});
+cpSample.addEventListener("click",()=>{
+  cpIps.value="83.44.55.66 104[.]28.212.115";cpDom.value="malicioso.com, phish-login.net";
+  cpUrl.value="hxxp://malicioso[.]com/malware.exe\nhxxps://phish-login[.]net/portal/index.html";
+  cpHash.value="d41d8cd98f00b204e9800998ecf8427e a3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
+  cpPfx.value="observ";cpCom.value=`IOCs_${new Date().toISOString().slice(0,10)}`;
+  refreshCP();toast("ok","Ejemplo","Listo para generar.");
+});
+
+/* ═══ DEFANG ═══ */
+const dfIn=document.getElementById("dfIn"),dfOut=document.getElementById("dfOut"),dfBtn=document.getElementById("dfBtn"),
+  dfCopy=document.getElementById("dfCopy"),dfClear=document.getElementById("dfClear"),dfCnt=document.getElementById("dfCnt"),dfN=document.getElementById("dfN");
+
+function cleanDF(l){return l.trim().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".").replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://").replaceAll("[://]","://").replace(/\s*\.\s*/g,".").trim()}
+
+// Smart IoC splitter: splits on delimiters but respects URLs
+function splitIoCs(text){
+  // First split on newlines, commas, semicolons, tabs
+  const chunks = text.split(/[\n\r,;\t]+/).map(s=>s.trim()).filter(Boolean);
+  const tokens = [];
+  for(const chunk of chunks){
+    // Split each chunk on spaces, but re-join if it looks like a URL fragment
+    const parts = chunk.split(/\s+/);
+    for(const p of parts){
+      if(p.trim()) tokens.push(p.trim());
     }
   }
+  return tokens;
+}
 
-  vendorButtons.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      vendorButtons.forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      setVendor(btn.dataset.vendor);
-    });
-  });
+dfBtn.addEventListener("click",()=>{
+  const tokens=splitIoCs(dfIn.value);
+  if(!tokens.length){toast("bad","Error","Sin IoCs.");return}
+  const res=dedup(tokens.map(cleanDF)).sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+  dfOut.textContent=res.join("\n");dfOut.style.display="block";
+  dfN.textContent=res.length;dfCnt.style.display="inline-flex";dfCopy.disabled=false;
+  toast("ok","Listo",`${res.length} IoCs limpiados.`);
+});
+dfCopy.addEventListener("click",()=>clip(dfOut.textContent));
+dfClear.addEventListener("click",()=>{dfIn.value="";dfOut.textContent="";dfOut.style.display="none";dfCnt.style.display="none";dfCopy.disabled=true});
 
-  // ---------- Helpers ----------
-  function escapeQuotes(s){ return (s||"").replaceAll('"','""'); }
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function nowLocal(){
-    const d = new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-  }
-  function normalizeIoc(s){
-    return (s||"").trim()
-      .replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".")
-      .replace(/\s*\.\s*/g,".")
-      .replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://")
-      .replace(/\s+/g," ");
-  }
-  function isValidIPv4(ip){
-    const m = ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);
-    if(!m) return false;
-    return ip.split(".").every(o=>Number(o)>=0&&Number(o)<=255);
-  }
-  function parseLines(text){
-    return text.split(/\r?\n/).map(s=>normalizeIoc(s)).map(s=>s.trim()).filter(Boolean);
-  }
-  function dedupe(arr){
-    const seen=new Set(), out=[];
-    for(const x of arr){ const k=x.toLowerCase(); if(seen.has(k)) continue; seen.add(k); out.push(x); }
-    return out;
-  }
-  function objName(ip){ return "AS_"+ip; }
+/* ═══ WILDCARD ═══ */
+const wcIn=document.getElementById("wcIn"),wcOut=document.getElementById("wcOut"),wcBtn=document.getElementById("wcBtn"),
+  wcCopy=document.getElementById("wcCopy"),wcClear=document.getElementById("wcClear"),wcCnt=document.getElementById("wcCnt"),wcN=document.getElementById("wcN");
 
-  // ---------- Local log ----------
-  const LOG_KEY = "ioc_suite_log_v2";
-  const logTbody = document.getElementById("log");
-  function loadLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY)||"[]"); }catch{ return []; } }
-  function saveLog(rows){ localStorage.setItem(LOG_KEY, JSON.stringify(rows)); }
-  function escapeHtml(s){
-    return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
-  }
-  function renderLog(){
-    const rows = loadLog();
-    logTbody.innerHTML = "";
-    rows.slice(-300).reverse().forEach(r=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${escapeHtml(r.date)}</td><td>${escapeHtml(r.vendor)}</td><td>${escapeHtml(r.type)}</td>
-        <td style="font-family:var(--mono)">${escapeHtml(r.ioc)}</td><td>${escapeHtml(r.group||"-")}</td>
-        <td>${escapeHtml(r.comment||"-")}</td><td>${escapeHtml(r.extra||"-")}</td>`;
-      logTbody.appendChild(tr);
-    });
-  }
-  function addLogEntry({vendor,type,ioc,group,comment,extra}){
-    const rows = loadLog();
-    rows.push({ date:nowLocal(), vendor:vendor||"-", type:type||"-", ioc:ioc||"-", group:group||"", comment:comment||"", extra:extra||"" });
-    saveLog(rows);
-    renderLog();
-  }
-  renderLog();
+function fmtWC(l){let s=l.trim();if(!s)return"";s=s.toLowerCase().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");s=s.replace(/^\*\.?/,"");return"*"+s+"*"}
+wcBtn.addEventListener("click",()=>{
+  const tokens=wcIn.value.split(/[\n\r,;\t\s]+/).map(l=>l.trim()).filter(Boolean);
+  if(!tokens.length){toast("bad","Error","Sin wildcards.");return}
+  const res=dedup(tokens.map(fmtWC).filter(Boolean)).sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+  wcOut.textContent=res.join("\n");wcOut.style.display="block";
+  wcN.textContent=res.length;wcCnt.style.display="inline-flex";wcCopy.disabled=false;
+  toast("ok","Listo",`${res.length} wildcards.`);
+});
+wcCopy.addEventListener("click",()=>clip(wcOut.textContent));
+wcClear.addEventListener("click",()=>{wcIn.value="";wcOut.textContent="";wcOut.style.display="none";wcCnt.style.display="none";wcCopy.disabled=true});
 
-  // ---------- FW MODE ----------
-  const ipsEl = document.getElementById("ips");
-  const commentEl = document.getElementById("comment");
-  const groupEl = document.getElementById("group");
-  const genFwBtn = document.getElementById("genFw");
-  const copyFwBtn = document.getElementById("copyFw");
+/* ═══ CLIPBOARD ═══ */
+async function clip(t){try{await navigator.clipboard.writeText(t||"");toast("ok","Copiado","Listo.")}catch{toast("warn","Ojo","No se pudo copiar.")}}
 
-  function parseIPs(text){
-    const lines = parseLines(text), ips=[], bad=[], seen=new Set();
-    for(const raw of lines){
-      const line=normalizeIoc(raw), key=line.toLowerCase();
-      if(seen.has(key)) continue; seen.add(key);
-      if(isValidIPv4(line)) ips.push(line); else bad.push(line);
-    }
-    return {ips,bad};
+/* ═══ KEYBOARD ═══ */
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey&&e.key==="Enter"){
+    if(currentPage==="fortigate")fgGen.click();
+    else if(currentPage==="paloalto")paGen.click();
+    else if(currentPage==="checkpoint")cpGen.click();
   }
-  function genFortigate(ips,comment,group){
-    const a=["config firewall address"];
-    for(const ip of ips){
-      const n=objName(ip);
-      a.push(`    edit "${n}"`);
-      a.push(`        set subnet ${ip} 255.255.255.255`);
-      a.push(`        set comment "${comment.replaceAll('"','\\"')}"`);
-      a.push("    next");
-    }
-    a.push("end","","config firewall addrgrp",`    edit "${group}"`);
-    for(const ip of ips) a.push(`        append member "${objName(ip)}"`);
-    a.push("    next","end");
-    return a.join("\n");
-  }
-  function genPaloalto(ips,comment,group,vsys,doCommit){
-    const lines=[];
-    for(const ip of ips) lines.push(`set vsys ${vsys} address ${objName(ip)} ip-netmask ${ip}/32 description "${comment.replaceAll('"','\\"')}"`);
-    for(const ip of ips) lines.push(`set vsys ${vsys} address-group ${group} static ${objName(ip)}`);
-    if(doCommit) lines.push("commit");
-    return lines.join("\n");
-  }
-  function buildFw(){
-    const {ips,bad}=parseIPs(ipsEl.value);
-    const comment=(commentEl.value||"").trim(), group=(groupEl.value||"").trim();
-    if(!ips.length) throw new Error("No hay IPs validas para procesar.");
-    if(!comment||!group) throw new Error("Falta comentario o grupo de bloqueo.");
-    if(bad.length) toast("warn","Aviso",`Lineas invalidas ignoradas: ${bad.slice(0,5).join(", ")}${bad.length>5?" ...":""}`);
-    const out = vendorValue==="fortigate"
-      ? genFortigate(ips,comment,group)
-      : genPaloalto(ips,comment,group,(vsysEl.value.trim()||"vsys1"),doCommit);
-    return {out,ips,comment,group};
-  }
-  genFwBtn.addEventListener("click",()=>{
-    try{
-      if(vendorValue==="checkpoint"){ toast("warn","Ojo","Estas en modo Check Point."); return; }
-      const {out,ips,comment,group}=buildFw();
-      outEl.textContent=out; copyFwBtn.disabled=false;
-      toast("ok","Generado","Salida lista para copiar/pegar.");
-      const extra=vendorValue==="paloalto"?`vsys=${vsysEl.value.trim()||"vsys1"} commit=${doCommit?"yes":"no"}`:"";
-      ips.forEach(ip=>addLogEntry({vendor:vendorValue,type:"IP",ioc:ip,group,comment,extra}));
-    }catch(e){ outEl.textContent=""; copyFwBtn.disabled=true; toast("bad","Error",e.message); }
-  });
-  copyFwBtn.addEventListener("click",async()=>{
-    try{ await navigator.clipboard.writeText(outEl.textContent||""); toast("ok","Copiado","Listo."); }
-    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
-  });
+});
 
-  // ---------- CHECK POINT ----------
-  const cpConfidence=document.getElementById("cpConfidence"),cpSeverity=document.getElementById("cpSeverity"),
-    cpProduct=document.getElementById("cpProduct"),cpComment=document.getElementById("cpComment"),
-    cpIps=document.getElementById("cpIps"),cpDomains=document.getElementById("cpDomains"),
-    cpUrls=document.getElementById("cpUrls"),cpHashes=document.getElementById("cpHashes"),
-    cpPrefix=document.getElementById("cpPrefix"),cpUniqMode=document.getElementById("cpUniqMode"),
-    cpDedupe=document.getElementById("cpDedupe"),
-    nIp=document.getElementById("nIp"),nDom=document.getElementById("nDom"),
-    nUrl=document.getElementById("nUrl"),nHash=document.getElementById("nHash"),
-    genCpBtn=document.getElementById("genCp"),copyCpBtn=document.getElementById("copyCp"),
-    dlCpBtn=document.getElementById("dlCp"),openCpBtn=document.getElementById("openCp"),
-    sampleCpBtn=document.getElementById("sampleCp");
-
-  function sanitizeForUniq(s){
-    return s.replaceAll("://","_").replaceAll("/","_").replaceAll(".","_").replaceAll(":","_")
-      .replaceAll("?","_").replaceAll("&","_").replaceAll("=","_").replaceAll("@","_")
-      .replaceAll("#","_").replaceAll("%","_").replaceAll("+","_").replaceAll(" ","_")
-      .replace(/[^a-zA-Z0-9_\-]/g,"_").slice(0,64);
-  }
-  function detectHashType(h){
-    const x=normalizeIoc(h).trim();
-    if(/^[a-fA-F0-9]{32}$/.test(x)) return "MD5";
-    if(/^[a-fA-F0-9]{64}$/.test(x)) return "SHA256";
-    return "HASH";
-  }
-  function refreshCounters(){
-    let ips=parseLines(cpIps.value).filter(isValidIPv4),dom=parseLines(cpDomains.value),
-      url=parseLines(cpUrls.value),hsh=parseLines(cpHashes.value);
-    if(cpDedupe.value==="yes"){ips=dedupe(ips);dom=dedupe(dom);url=dedupe(url);hsh=dedupe(hsh);}
-    nIp.textContent=String(ips.length);nDom.textContent=String(dom.length);
-    nUrl.textContent=String(url.length);nHash.textContent=String(hsh.length);
-  }
-  [cpIps,cpDomains,cpUrls,cpHashes,cpDedupe].forEach(el=>{
-    el.addEventListener("input",refreshCounters); el.addEventListener("change",refreshCounters);
-  });
-  function buildCheckpointCSV(){
-    const confidence=cpConfidence.value,severity=cpSeverity.value,product=cpProduct.value,
-      comment=(cpComment.value||"").trim()||`IOCs_${new Date().toISOString().slice(0,10)}`;
-    let ips=parseLines(cpIps.value).filter(isValidIPv4),dom=parseLines(cpDomains.value),
-      url=parseLines(cpUrls.value),hsh=parseLines(cpHashes.value);
-    if(cpDedupe.value==="yes"){ips=dedupe(ips);dom=dedupe(dom);url=dedupe(url);hsh=dedupe(hsh);}
-    const rows=[],prefix=(cpPrefix.value||"ioc").trim()||"ioc";let seq=1;
-    function uniqNameFor(ioc){ return cpUniqMode.value==="seq"?`${prefix}${seq++}`:`${prefix}_${sanitizeForUniq(ioc)}`; }
-    function pushRow(ioc,type){ rows.push([uniqNameFor(ioc),ioc,type,confidence,severity,product,comment]); }
-    ips.forEach(ip=>pushRow(ip,"IP")); dom.forEach(d=>pushRow(d,"DOMAIN"));
-    url.forEach(u=>pushRow(u,"URL")); hsh.forEach(h=>pushRow(h,detectHashType(h)));
-    if(!rows.length) throw new Error("No hay IoCs para generar CSV.");
-    const csv=rows.map(r=>r.map(v=>`"${escapeQuotes(String(v))}"`).join(",")).join("\n");
-    return {csv,count:rows.length,ips,dom,url,hsh,meta:{confidence,severity,product,comment}};
-  }
-  function downloadText(filename,text){
-    const blob=new Blob([text],{type:"text/csv;charset=utf-8"});
-    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
-    document.body.appendChild(a); a.click(); a.remove();
-  }
-  genCpBtn.addEventListener("click",()=>{
-    try{
-      if(vendorValue!=="checkpoint"){ toast("warn","Ojo","Estas en modo Firewall."); return; }
-      const {csv,count,ips,dom,url,hsh,meta}=buildCheckpointCSV();
-      outEl.textContent=csv; copyCpBtn.disabled=false; dlCpBtn.disabled=false; openCpBtn.disabled=false;
-      toast("ok","CSV listo",`${count} IoCs generados.`);
-      const extra=`product=${meta.product} conf=${meta.confidence} sev=${meta.severity}`;
-      ips.forEach(v=>addLogEntry({vendor:"checkpoint",type:"IP",ioc:v,group:"",comment:meta.comment,extra}));
-      dom.forEach(v=>addLogEntry({vendor:"checkpoint",type:"DOMAIN",ioc:v,group:"",comment:meta.comment,extra}));
-      url.forEach(v=>addLogEntry({vendor:"checkpoint",type:"URL",ioc:v,group:"",comment:meta.comment,extra}));
-      hsh.forEach(v=>addLogEntry({vendor:"checkpoint",type:detectHashType(v),ioc:normalizeIoc(v),group:"",comment:meta.comment,extra}));
-    }catch(e){ outEl.textContent=""; copyCpBtn.disabled=true; dlCpBtn.disabled=true; openCpBtn.disabled=true; toast("bad","Error",e.message); }
-  });
-  copyCpBtn.addEventListener("click",async()=>{
-    try{ await navigator.clipboard.writeText(outEl.textContent||""); toast("ok","Copiado","CSV copiado al portapapeles."); }
-    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
-  });
-  dlCpBtn.addEventListener("click",()=>{
-    const name=`checkpoint_iocs_${new Date().toISOString().slice(0,10)}.csv`;
-    downloadText(name,outEl.textContent||""); toast("ok","Descargado",name);
-  });
-  openCpBtn.addEventListener("click",()=>{
-    const w=window.open("","_blank");
-    if(!w){ toast("warn","Ojo","Tu navegador bloqueo la pestana. Permite popups o usa Descargar."); return; }
-    const esc=(outEl.textContent||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-    w.document.write(`<pre style="white-space:pre-wrap;font-family:ui-monospace,monospace">${esc}</pre>`);
-    w.document.close();
-  });
-  sampleCpBtn.addEventListener("click",()=>{
-    cpIps.value="83.44.55.66\n104[.]28.212.115";
-    cpDomains.value="malicioso.com\nphish-login.net";
-    cpUrls.value="hxxp://malicioso[.]com/malware.exe\nhxxps://phish-login[.]net/portal/index.html";
-    cpHashes.value="d41d8cd98f00b204e9800998ecf8427e\na3c9d1f70c2bcb1fca92f19dbaf44b7d5e62d917708ea72b5e36d317f97dfc42";
-    cpPrefix.value="observ";
-    cpComment.value=`IOCs_${new Date().toISOString().slice(0,10)}`;
-    refreshCounters(); toast("ok","Ejemplo cargado","Listo para generar.");
-  });
-
-  document.addEventListener("keydown",(e)=>{
-    if(e.ctrlKey&&e.key==="Enter"){ if(vendorValue==="checkpoint") genCpBtn.click(); else genFwBtn.click(); }
-  });
-  setVendor("fortigate");
-
-  // ════════════════════════════════════════════
-  // NUEVA LOGICA: Defang cleaner + Wildcard formatter
-  // ════════════════════════════════════════════
-
-  async function copyToClipboard(text, label){
-    try{ await navigator.clipboard.writeText(text); toast("ok","Copiado",`${label} copiado al portapapeles.`); }
-    catch{ toast("warn","Ojo","El navegador no dejo copiar. Copia manual."); }
-  }
-
-  // ── Defang cleaner ──
-  function cleanDefang(line){
-    return line.trim()
-      .replaceAll("[.]",".")
-      .replaceAll("(.)",".")
-      .replaceAll("{.}",".")
-      .replace(/^hxxps:\/\//i,"https://")
-      .replace(/^hxxp:\/\//i,"http://")
-      .replaceAll("[://]","://")
-      .replace(/\s*\.\s*/g,".")
-      .trim();
-  }
-
-  const defangInput   = document.getElementById("defangInput");
-  const defangOutput  = document.getElementById("defangOutput");
-  const defangBtn     = document.getElementById("defangBtn");
-  const defangCopy    = document.getElementById("defangCopy");
-  const defangClear   = document.getElementById("defangClear");
-  const defangCounter = document.getElementById("defangCounter");
-  const defangCountEl = document.getElementById("defangCount");
-
-  defangBtn.addEventListener("click",()=>{
-    const lines = defangInput.value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-    if(!lines.length){ toast("bad","Error","No hay IoCs para procesar."); return; }
-    const result = lines.map(cleanDefang);
-    defangOutput.textContent = result.join("\n");
-    defangOutput.style.display = "block";
-    defangCountEl.textContent = String(result.length);
-    defangCounter.style.display = "inline-flex";
-    defangCopy.disabled = false;
-    toast("ok","Listo",`${result.length} IoCs limpiados.`);
-  });
-  defangCopy.addEventListener("click",()=>{ copyToClipboard(defangOutput.textContent||"","Resultado"); });
-  defangClear.addEventListener("click",()=>{
-    defangInput.value=""; defangOutput.textContent="";
-    defangOutput.style.display="none"; defangCounter.style.display="none"; defangCopy.disabled=true;
-  });
-
-  // ── Wildcard formatter ──
-  // Regla: *.dominio[.]tld  →  *dominio.tld*
-  // 1. Quitar el "." entre "*" y el dominio
-  // 2. Limpiar [.] → .
-  // 3. Agregar "*" al final
-  function formatWildcard(line){
-    let s = line.trim();
-    if(!s) return "";
-    // 1. Forzar minusculas
-    s = s.toLowerCase();
-    // 2. Limpiar notacion defang [.] → .
-    s = s.replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");
-    // 3. Quitar asterisco(s) y punto inicial si los trae: "*.dominio" → "dominio" | "*dominio" → "dominio"
-    s = s.replace(/^\*\.?/, "");
-    // 4. Envolver con * al inicio y al final
-    s = "*" + s + "*";
-    return s;
-  }
-
-  const wildcardInput   = document.getElementById("wildcardInput");
-  const wildcardOutput  = document.getElementById("wildcardOutput");
-  const wildcardBtn     = document.getElementById("wildcardBtn");
-  const wildcardCopy    = document.getElementById("wildcardCopy");
-  const wildcardClear   = document.getElementById("wildcardClear");
-  const wildcardCounter = document.getElementById("wildcardCounter");
-  const wildcardCountEl = document.getElementById("wildcardCount");
-
-  wildcardBtn.addEventListener("click",()=>{
-    const lines = wildcardInput.value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-    if(!lines.length){ toast("bad","Error","No hay wildcards para procesar."); return; }
-    const result = lines.map(formatWildcard).filter(Boolean);
-    wildcardOutput.textContent = result.join("\n");
-    wildcardOutput.style.display = "block";
-    wildcardCountEl.textContent = String(result.length);
-    wildcardCounter.style.display = "inline-flex";
-    wildcardCopy.disabled = false;
-    toast("ok","Listo",`${result.length} wildcards formateadas.`);
-  });
-  wildcardCopy.addEventListener("click",()=>{ copyToClipboard(wildcardOutput.textContent||"","Wildcards"); });
-  wildcardClear.addEventListener("click",()=>{
-    wildcardInput.value=""; wildcardOutput.textContent="";
-    wildcardOutput.style.display="none"; wildcardCounter.style.display="none"; wildcardCopy.disabled=true;
-  });
+})();
 </script>
 </body>
 </html>
