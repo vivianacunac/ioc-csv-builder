@@ -693,14 +693,15 @@
     <div class="page-header">
       <div>
         <h2>Defang → Clean</h2>
-        <div class="subtitle">Limpia notación defang de dominios, IPs y URLs</div>
+        <div class="subtitle">Limpia notación defang · elimina protocolos (http/hxxp) y www</div>
       </div>
     </div>
     <div class="glass" style="max-width:680px">
       <div class="glass-body">
         <div class="tool-example">
+          <code>hxxps://www[.]malware[.]com/path</code> <span class="ar">→</span> <code>malware.com/path</code><br>
           <code>104[.]28[.]212[.]115</code> <span class="ar">→</span> <code>104.28.212.115</code><br>
-          <code>hxxps://malware[.]com/path</code> <span class="ar">→</span> <code>https://malware.com/path</code>
+          <code>https://www.evil.com</code> <span class="ar">→</span> <code>evil.com</code>
         </div>
         <label>IoCs con corchetes — uno por línea</label>
         <textarea id="dfIn" placeholder="104[.]28[.]212[.]115 hxxps://malware[.]com/path, evil[.]domain[.]net; otro[.]ioc[.]com"></textarea>
@@ -722,14 +723,15 @@
     <div class="page-header">
       <div>
         <h2>Formateador Wildcards</h2>
-        <div class="subtitle">Convierte dominios al formato wildcard para McAfee Proxy</div>
+        <div class="subtitle">Convierte dominios al formato wildcard para McAfee Proxy · elimina protocolos y www</div>
       </div>
     </div>
     <div class="glass" style="max-width:680px">
       <div class="glass-body">
         <div class="tool-example">
           <code>*.gestioncurso[.]cl</code> <span class="ar">→</span> <code>*gestioncurso.cl*</code><br>
-          <code>MALWARE[.]DOMAIN[.]COM</code> <span class="ar">→</span> <code>*malware.domain.com*</code>
+          <code>hxxps://www[.]MALWARE[.]COM</code> <span class="ar">→</span> <code>*malware.com*</code><br>
+          <code>https://www.evil.net/path</code> <span class="ar">→</span> <code>*evil.net/path*</code>
         </div>
         <label>Wildcards — una por línea</label>
         <textarea id="wcIn" placeholder="*.gestioncurso[.]cl *.goodvibrationsmusic[.]co[.]uk, *.mail[.]gw"></textarea>
@@ -836,6 +838,11 @@ function norm(s){
     .replace(/\s*\.\s*/g,".").replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://").replace(/\s+/g," ");
 }
 function validIP(ip){const m=ip.match(/^(\d{1,3}\.){3}\d{1,3}$/);if(!m)return false;return ip.split(".").every(o=>+o>=0&&+o<=255)}
+
+/* ═══ STRIP PROTOCOL & WWW (shared helper) ═══ */
+function stripProtoWww(s){
+  return s.replace(/^hxxps?:\/\//i,"").replace(/^https?:\/\//i,"").replace(/^www\./i,"");
+}
 
 // Smart tokenizer: splits on newlines, commas, semicolons, tabs, and whitespace
 // For URLs (mode="url"), only splits on newlines, commas, semicolons, tabs (preserves paths)
@@ -1019,7 +1026,16 @@ cpSample.addEventListener("click",()=>{
 const dfIn=document.getElementById("dfIn"),dfOut=document.getElementById("dfOut"),dfBtn=document.getElementById("dfBtn"),
   dfCopy=document.getElementById("dfCopy"),dfClear=document.getElementById("dfClear"),dfCnt=document.getElementById("dfCnt"),dfN=document.getElementById("dfN");
 
-function cleanDF(l){return l.trim().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".").replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://").replaceAll("[://]","://").replace(/\s*\.\s*/g,".").trim()}
+function cleanDF(l){
+  let s=l.trim()
+    .replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".")
+    .replace(/^hxxps:\/\//i,"https://").replace(/^hxxp:\/\//i,"http://")
+    .replaceAll("[://]","://")
+    .replace(/\s*\.\s*/g,".").trim();
+  // Strip protocol (https://, http://, hxxps://, hxxp://) and www.
+  s=stripProtoWww(s);
+  return s;
+}
 
 // Smart IoC splitter: splits on delimiters but respects URLs
 function splitIoCs(text){
@@ -1051,7 +1067,14 @@ dfClear.addEventListener("click",()=>{dfIn.value="";dfOut.textContent="";dfOut.s
 const wcIn=document.getElementById("wcIn"),wcOut=document.getElementById("wcOut"),wcBtn=document.getElementById("wcBtn"),
   wcCopy=document.getElementById("wcCopy"),wcClear=document.getElementById("wcClear"),wcCnt=document.getElementById("wcCnt"),wcN=document.getElementById("wcN");
 
-function fmtWC(l){let s=l.trim();if(!s)return"";s=s.toLowerCase().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");s=s.replace(/^\*\.?/,"");return"*"+s+"*"}
+function fmtWC(l){
+  let s=l.trim();if(!s)return"";
+  s=s.toLowerCase().replaceAll("[.]",".").replaceAll("(.)",".")  .replaceAll("{.}",".");
+  // Strip protocol (https://, http://, hxxps://, hxxp://) and www.
+  s=stripProtoWww(s);
+  s=s.replace(/^\*\.?/,"");
+  return"*"+s+"*";
+}
 wcBtn.addEventListener("click",()=>{
   const tokens=wcIn.value.split(/[\n\r,;\t\s]+/).map(l=>l.trim()).filter(Boolean);
   if(!tokens.length){toast("bad","Error","Sin wildcards.");return}
