@@ -1516,7 +1516,7 @@ function parseFMC(text){
   return{objs,bad};
 }
 // FMC-safe object name: prefix + value with . and / replaced by _
-function fmcName(pfx,value){return(pfx+value).replaceAll(".","_").replaceAll("/","_")}
+function fmcName(pfx,value){return(pfx+value).replaceAll("/","_")}
 
 // FMC network object import format: NAME,DESCRIPTION,TYPE,VALUE,LOOKUP
 // TYPE = Host | Network | Range | FQDN ; LOOKUP solo aplica a FQDN (vacío para el resto)
