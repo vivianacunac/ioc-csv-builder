@@ -645,18 +645,11 @@
           <label>IPs / Redes (IPv4) — una por línea</label>
           <textarea id="fmIps" placeholder="1.2.3.4 5.6.7.8, 9.10.11.12; 104[.]28.212.115&#10;10.0.0.0/24 (también acepta redes CIDR)"></textarea>
           <div class="hint">Acepta cualquier separador (espacio, coma, ; tab, salto de línea) · defang · deduplica y ordena · CIDR → Network, IP simple → Host</div>
-          <label>Descripción (description)</label>
+          <label>Descripción (DESCRIPTION)</label>
           <textarea id="fmComment" rows="2" style="min-height:52px" placeholder="CS0026629 - scanning / brute force"></textarea>
-          <div class="row">
-            <div>
-              <label>Prefijo de nombre</label>
-              <input id="fmPfx" value="AS_">
-            </div>
-            <div>
-              <label>Overridable</label>
-              <select id="fmOver"><option value="false" selected>false</option><option value="true">true</option></select>
-            </div>
-          </div>
+          <label>Prefijo de nombre</label>
+          <input id="fmPfx" value="AS_">
+          <div class="hint">Columnas FMC: <b>NAME,DESCRIPTION,TYPE,VALUE,LOOKUP</b> · TYPE = Host / Network · LOOKUP vacío para Host/Network</div>
           <div class="actions">
             <button class="btn btn-cy" id="fmGen">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -1494,7 +1487,7 @@ function dlText(fn,t){const b=new Blob([t],{type:"text/csv;charset=utf-8"}),a=do
 
 /* ═══ FIREPOWER FMC ═══ */
 const fmIps=document.getElementById("fmIps"),fmComment=document.getElementById("fmComment"),fmPfx=document.getElementById("fmPfx"),
-  fmOver=document.getElementById("fmOver"),fmOut=document.getElementById("fmOut"),fmGen=document.getElementById("fmGen"),
+  fmOut=document.getElementById("fmOut"),fmGen=document.getElementById("fmGen"),
   fmCopy=document.getElementById("fmCopy"),fmDl=document.getElementById("fmDl");
 
 // Validate IPv4 CIDR network: valid IP + prefix 0-32
@@ -1525,22 +1518,24 @@ function parseFMC(text){
 // FMC-safe object name: prefix + value with . and / replaced by _
 function fmcName(pfx,value){return(pfx+value).replaceAll(".","_").replaceAll("/","_")}
 
-function genFMC(objs,desc,pfx,over){
-  const rows=[["name","value","type","description","overridable"]];
+// FMC network object import format: NAME,DESCRIPTION,TYPE,VALUE,LOOKUP
+// TYPE = Host | Network | Range | FQDN ; LOOKUP solo aplica a FQDN (vacío para el resto)
+function genFMC(objs,desc,pfx){
+  const rows=[["NAME","DESCRIPTION","TYPE","VALUE","LOOKUP"]];
   for(const o of objs){
-    rows.push([fmcName(pfx,o.value),o.value,o.type,desc,over]);
+    rows.push([fmcName(pfx,o.value),desc,o.type,o.value,""]);
   }
   return rows.map(r=>r.map(v=>`"${escQ(String(v))}"`).join(",")).join("\n");
 }
 fmGen.addEventListener("click",()=>{
   try{
     const{objs,bad}=parseFMC(fmIps.value);
-    const d=(fmComment.value||"").trim(),pfx=(fmPfx.value||"").trim(),over=fmOver.value;
+    const d=(fmComment.value||"").trim(),pfx=(fmPfx.value||"").trim();
     if(!objs.length)throw new Error("No hay IPs/redes válidas.");
     if(bad.length)toast("warn","Aviso",`Ignoradas: ${bad.slice(0,4).join(", ")}${bad.length>4?" …":""}`);
-    fmOut.textContent=genFMC(objs,d,pfx,over);fmOut.classList.remove("fresh");void fmOut.offsetWidth;fmOut.classList.add("fresh");
+    fmOut.textContent=genFMC(objs,d,pfx);fmOut.classList.remove("fresh");void fmOut.offsetWidth;fmOut.classList.add("fresh");
     fmCopy.disabled=false;fmDl.disabled=false;toast("ok","CSV listo",`${objs.length} objetos.`);
-    objs.forEach(o=>addLog({vendor:"firepower",type:o.type,ioc:o.value,group:fmcName(pfx,o.value),comment:d,extra:`overridable=${over}`}));
+    objs.forEach(o=>addLog({vendor:"firepower",type:o.type,ioc:o.value,group:fmcName(pfx,o.value),comment:d}));
   }catch(e){fmOut.innerHTML='<span class="empty">—</span>';fmCopy.disabled=true;fmDl.disabled=true;toast("bad","Error",e.message)}
 });
 fmCopy.addEventListener("click",()=>clip(fmOut.textContent));
