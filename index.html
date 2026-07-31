@@ -759,11 +759,14 @@
           background: var(--ch-bg);
           color: var(--ch-text);
           font-family: var(--ch-sans);
-          padding: 2rem 1.5rem;
+          padding: 2.25rem 2rem;
           border-radius: 14px;
           border: 1px solid var(--ch-line);
-          max-width: 980px;
+          max-width: 860px;
           margin: 0 auto;
+        }
+        @media (max-width: 560px) {
+          #conversor-horas.ch-root { padding: 1.5rem 1rem; }
         }
 
         #conversor-horas.ch-root *,
@@ -777,7 +780,7 @@
           align-items: baseline;
           justify-content: space-between;
           gap: 1rem;
-          margin-bottom: 0.35rem;
+          margin-bottom: 1.75rem;
           flex-wrap: wrap;
         }
 
@@ -801,126 +804,13 @@
           font-weight: 500;
         }
 
-        #conversor-horas .ch-sub {
-          color: var(--ch-text-dim);
-          font-size: 0.9rem;
-          margin: 0 0 1.75rem 0;
-        }
-
-        /* ---------- Tarjetas de hora actual ---------- */
-        #conversor-horas .ch-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-          gap: 0.75rem;
-          margin-bottom: 2.25rem;
-        }
-
-        @media (max-width: 420px) {
-          #conversor-horas .ch-grid { grid-template-columns: 1fr; }
-        }
-
-        #conversor-horas .ch-card {
-          background: var(--ch-panel);
-          border: 1px solid var(--ch-line);
-          border-radius: 10px;
-          padding: 1rem 1rem 0.9rem;
-          position: relative;
-          overflow: hidden;
-        }
-
-        #conversor-horas .ch-card::before {
-          content: "";
-          position: absolute;
-          top: 0; left: 0;
-          width: 3px; height: 100%;
-          background: var(--ch-accent-dim);
-          transition: background 0.3s ease;
-        }
-
-        #conversor-horas .ch-card.ch-is-now::before {
-          background: var(--ch-accent);
-        }
-
-        #conversor-horas .ch-card-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 0.6rem;
-        }
-
-        #conversor-horas .ch-flag {
-          font-size: 1.3rem;
-          line-height: 1;
-        }
-
-        #conversor-horas .ch-offset {
-          font-family: var(--ch-mono);
-          font-size: 0.68rem;
-          color: var(--ch-text-dim);
-          background: var(--ch-panel-2);
-          border: 1px solid var(--ch-line);
-          border-radius: 4px;
-          padding: 0.15rem 0.4rem;
-          white-space: nowrap;
-        }
-
-        #conversor-horas .ch-country {
-          font-size: 0.78rem;
-          color: var(--ch-text-dim);
-          margin: 0 0 0.15rem 0;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-
-        #conversor-horas .ch-time {
-          font-family: var(--ch-mono);
-          font-size: 1.7rem;
-          font-weight: 500;
-          letter-spacing: 0.01em;
-          margin: 0;
-        }
-
-        #conversor-horas .ch-date {
-          font-size: 0.74rem;
-          color: var(--ch-text-dim);
-          margin: 0.15rem 0 0 0;
-        }
-
-        /* ---------- Divider ---------- */
-        #conversor-horas .ch-divider {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin: 0 0 1.75rem 0;
-          color: var(--ch-text-dim);
-          font-family: var(--ch-mono);
-          font-size: 0.7rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-        }
-
-        #conversor-horas .ch-divider::before,
-        #conversor-horas .ch-divider::after {
-          content: "";
-          flex: 1;
-          height: 1px;
-          background: var(--ch-line);
-        }
-
-        /* ---------- Conversor manual ---------- */
-        #conversor-horas .ch-convert-box {
-          background: var(--ch-panel);
-          border: 1px solid var(--ch-line);
-          border-radius: 10px;
-          padding: 1.25rem;
-        }
-
-        #conversor-horas .ch-convert-row {
+        /* ---------- Barra de conversión ---------- */
+        #conversor-horas .ch-toolbar {
           display: flex;
           gap: 0.75rem;
           align-items: flex-end;
           flex-wrap: wrap;
-          margin-bottom: 1.25rem;
+          margin-bottom: 1.75rem;
         }
 
         #conversor-horas .ch-field {
@@ -945,7 +835,7 @@
           padding: 0.55rem 0.6rem;
           font-family: var(--ch-mono);
           font-size: 0.9rem;
-          min-width: 9rem;
+          min-width: 8.5rem;
         }
 
         #conversor-horas .ch-field input:focus,
@@ -954,7 +844,8 @@
           outline-offset: 1px;
         }
 
-        #conversor-horas .ch-now-btn {
+        #conversor-horas .ch-now-btn,
+        #conversor-horas .ch-clear-btn {
           background: transparent;
           border: 1px solid var(--ch-accent-dim);
           color: var(--ch-accent);
@@ -966,67 +857,166 @@
           transition: background 0.2s ease, border-color 0.2s ease;
         }
 
+        #conversor-horas .ch-clear-btn {
+          border-color: var(--ch-line);
+          color: var(--ch-text-dim);
+        }
+
         #conversor-horas .ch-now-btn:hover {
           background: var(--ch-accent-dim);
           border-color: var(--ch-accent);
         }
 
-        #conversor-horas .ch-now-btn:focus-visible {
+        #conversor-horas .ch-clear-btn:hover {
+          border-color: var(--ch-text-dim);
+          color: var(--ch-text);
+        }
+
+        #conversor-horas .ch-now-btn:focus-visible,
+        #conversor-horas .ch-clear-btn:focus-visible {
           outline: 2px solid var(--ch-accent);
           outline-offset: 2px;
         }
 
-        #conversor-horas .ch-results {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 0.6rem;
-        }
-
-        @media (max-width: 420px) {
-          #conversor-horas .ch-results { grid-template-columns: 1fr; }
-        }
-
-        #conversor-horas .ch-result {
-          background: var(--ch-panel-2);
+        /* ---------- Lista unificada de zonas ---------- */
+        #conversor-horas .ch-rows {
           border: 1px solid var(--ch-line);
-          border-radius: 8px;
-          padding: 0.7rem 0.8rem;
+          border-radius: 10px;
+          background: var(--ch-panel);
+          overflow: hidden;
         }
 
-        #conversor-horas .ch-result.ch-source {
-          border-color: var(--ch-accent-dim);
+        #conversor-horas .ch-rows-head,
+        #conversor-horas .ch-row {
+          display: grid;
+          grid-template-columns: minmax(150px, 1.3fr) 1fr 1fr;
+          gap: 1rem;
+          align-items: center;
+          padding: 0.8rem 1.15rem;
         }
 
-        #conversor-horas .ch-result-label {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.7rem;
+        #conversor-horas .ch-rows-head {
+          padding-top: 0.65rem;
+          padding-bottom: 0.65rem;
+          background: var(--ch-panel-2);
+          border-bottom: 1px solid var(--ch-line);
+          font-size: 0.66rem;
+          font-family: var(--ch-mono);
           color: var(--ch-text-dim);
           text-transform: uppercase;
-          letter-spacing: 0.04em;
-          margin-bottom: 0.35rem;
+          letter-spacing: 0.1em;
+        }
+
+        #conversor-horas .ch-row {
+          border-bottom: 1px solid var(--ch-line);
+          border-left: 3px solid transparent;
+        }
+
+        #conversor-horas .ch-row:last-child { border-bottom: none; }
+
+        #conversor-horas .ch-row.ch-source {
+          border-left-color: var(--ch-accent);
+          background: rgba(217, 119, 87, 0.05);
+        }
+
+        #conversor-horas .ch-zone {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          min-width: 0;
+        }
+
+        #conversor-horas .ch-flag {
+          font-size: 1.25rem;
+          line-height: 1;
+          flex-shrink: 0;
+        }
+
+        #conversor-horas .ch-country {
+          font-size: 0.85rem;
+          margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        #conversor-horas .ch-offset {
+          font-family: var(--ch-mono);
+          font-size: 0.64rem;
+          color: var(--ch-text-dim);
+          background: var(--ch-panel-2);
+          border: 1px solid var(--ch-line);
+          border-radius: 4px;
+          padding: 0.12rem 0.35rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        #conversor-horas .ch-live-time {
+          font-family: var(--ch-mono);
+          font-size: 1.15rem;
+          font-weight: 500;
+          margin: 0;
+          font-variant-numeric: tabular-nums;
+        }
+
+        #conversor-horas .ch-live-date {
+          font-size: 0.7rem;
+          color: var(--ch-text-dim);
+          margin: 0.1rem 0 0 0;
+        }
+
+        #conversor-horas .ch-conv-cell { display: none; }
+        #conversor-horas .ch-rows.ch-has-conv .ch-conv-cell { display: block; }
+        #conversor-horas .ch-conv-head { visibility: hidden; }
+        #conversor-horas .ch-rows.ch-has-conv .ch-conv-head { visibility: visible; }
+
+        #conversor-horas .ch-conv-time {
+          font-family: var(--ch-mono);
+          font-size: 1.15rem;
+          font-weight: 500;
+          color: var(--ch-accent);
+          margin: 0;
+          font-variant-numeric: tabular-nums;
+        }
+
+        #conversor-horas .ch-conv-date {
+          font-size: 0.7rem;
+          color: var(--ch-text-dim);
+          margin: 0.1rem 0 0 0;
+          display: inline-block;
+        }
+
+        #conversor-horas .ch-day-shift {
+          display: inline-block;
+          font-size: 0.64rem;
+          font-family: var(--ch-mono);
+          color: var(--ch-warn);
+          border: 1px solid rgba(224, 162, 59, 0.35);
+          border-radius: 4px;
+          padding: 0.05rem 0.3rem;
+          margin-left: 0.35rem;
+          vertical-align: 1px;
         }
 
         #conversor-horas .ch-result-tag {
           font-family: var(--ch-mono);
           color: var(--ch-accent);
-          font-size: 0.65rem;
+          font-size: 0.62rem;
+          letter-spacing: 0.08em;
         }
 
-        #conversor-horas .ch-result-time {
-          font-family: var(--ch-mono);
-          font-size: 1.25rem;
-        }
-
-        #conversor-horas .ch-result-date {
-          font-size: 0.72rem;
-          color: var(--ch-text-dim);
-          margin-top: 0.15rem;
-        }
-
-        #conversor-horas .ch-day-shift {
-          font-size: 0.68rem;
-          color: var(--ch-warn);
+        @media (max-width: 560px) {
+          #conversor-horas .ch-rows-head { display: none; }
+          #conversor-horas .ch-row {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: "zone zone" "live conv";
+            row-gap: 0.5rem;
+            padding: 0.75rem 0.9rem;
+          }
+          #conversor-horas .ch-zone { grid-area: zone; }
+          #conversor-horas .ch-live-cell { grid-area: live; }
+          #conversor-horas .ch-conv-cell { grid-area: conv; }
         }
 
         #conversor-horas .ch-foot {
@@ -1034,10 +1024,6 @@
           font-size: 0.72rem;
           color: var(--ch-text-dim);
           font-family: var(--ch-mono);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          #conversor-horas .ch-card::before { transition: none; }
         }
       </style>
 
@@ -1047,30 +1033,30 @@
           Hora local del navegador: <strong id="ch-browser-clock">--:--:--</strong>
         </div>
       </div>
-      <p class="ch-sub">Hora actual y conversión manual entre Chile, Argentina, Ecuador, Paraguay, Colombia, Guatemala y El Salvador.</p>
 
-      <div class="ch-grid" id="ch-live-grid"></div>
-
-      <div class="ch-divider">Convertir una hora específica</div>
-
-      <div class="ch-convert-box">
-        <div class="ch-convert-row">
-          <div class="ch-field">
-            <label for="ch-input-date">Fecha</label>
-            <input type="date" id="ch-input-date" />
-          </div>
-          <div class="ch-field">
-            <label for="ch-input-time">Hora</label>
-            <input type="time" id="ch-input-time" step="60" />
-          </div>
-          <div class="ch-field">
-            <label for="ch-input-zone">Zona de origen</label>
-            <select id="ch-input-zone"></select>
-          </div>
-          <button class="ch-now-btn" id="ch-now-btn" type="button">Usar hora actual</button>
+      <div class="ch-toolbar">
+        <div class="ch-field">
+          <label for="ch-input-date">Fecha</label>
+          <input type="date" id="ch-input-date" />
         </div>
+        <div class="ch-field">
+          <label for="ch-input-time">Hora</label>
+          <input type="time" id="ch-input-time" step="60" />
+        </div>
+        <div class="ch-field">
+          <label for="ch-input-zone">Zona de origen</label>
+          <select id="ch-input-zone"></select>
+        </div>
+        <button class="ch-now-btn" id="ch-now-btn" type="button">Usar hora actual</button>
+        <button class="ch-clear-btn" id="ch-clear-btn" type="button">Limpiar</button>
+      </div>
 
-        <div class="ch-results" id="ch-convert-results"></div>
+      <div class="ch-rows" id="ch-zone-rows">
+        <div class="ch-rows-head">
+          <span>Zona</span>
+          <span>Hora actual</span>
+          <span class="ch-conv-head">Conversión</span>
+        </div>
       </div>
 
       <p class="ch-foot" id="ch-foot-note"></p>
@@ -1089,14 +1075,15 @@
           ];
 
           var root = document.getElementById("conversor-horas");
-          var liveGrid = root.querySelector("#ch-live-grid");
+          var rowsBox = root.querySelector("#ch-zone-rows");
           var browserClock = root.querySelector("#ch-browser-clock");
           var zoneSelect = root.querySelector("#ch-input-zone");
           var dateInput = root.querySelector("#ch-input-date");
           var timeInput = root.querySelector("#ch-input-time");
           var nowBtn = root.querySelector("#ch-now-btn");
-          var resultsBox = root.querySelector("#ch-convert-results");
+          var clearBtn = root.querySelector("#ch-clear-btn");
           var footNote = root.querySelector("#ch-foot-note");
+          var rowRefs = {};
 
           function getOffsetLabel(tz, date) {
             var parts = new Intl.DateTimeFormat("en-US", {
@@ -1134,30 +1121,50 @@
             return parts.day + "/" + parts.month + "/" + parts.year;
           }
 
-          function renderLiveCards() {
+          function buildRows() {
             var now = new Date();
-            liveGrid.innerHTML = "";
+            ZONES.forEach(function (z) {
+              var row = document.createElement("div");
+              row.className = "ch-row";
+              row.innerHTML =
+                '<div class="ch-zone">' +
+                  '<span class="ch-flag">' + z.flag + "</span>" +
+                  '<p class="ch-country">' + z.country + "</p>" +
+                  '<span class="ch-offset">' + getOffsetLabel(z.tz, now) + "</span>" +
+                "</div>" +
+                '<div class="ch-live-cell">' +
+                  '<p class="ch-live-time">--:--:--</p>' +
+                  '<p class="ch-live-date"></p>' +
+                "</div>" +
+                '<div class="ch-conv-cell">' +
+                  '<p class="ch-conv-time">--:--</p>' +
+                  '<span class="ch-conv-date"></span>' +
+                "</div>";
+              rowsBox.appendChild(row);
+              rowRefs[z.id] = {
+                row: row,
+                offset: row.querySelector(".ch-offset"),
+                liveTime: row.querySelector(".ch-live-time"),
+                liveDate: row.querySelector(".ch-live-date"),
+                convTime: row.querySelector(".ch-conv-time"),
+                convDate: row.querySelector(".ch-conv-date")
+              };
+            });
+          }
+
+          function tick() {
+            var now = new Date();
             ZONES.forEach(function (z) {
               var p = partsFor(z.tz, now);
-              var offset = getOffsetLabel(z.tz, now);
-              var card = document.createElement("div");
-              card.className = "ch-card";
-              card.innerHTML =
-                '<div class="ch-card-top">' +
-                  '<span class="ch-flag">' + z.flag + "</span>" +
-                  '<span class="ch-offset">' + offset + "</span>" +
-                "</div>" +
-                '<p class="ch-country">' + z.country + "</p>" +
-                '<p class="ch-time">' + formatTimeHMS(p) + "</p>" +
-                '<p class="ch-date">' + formatDate(p) + "</p>";
-              liveGrid.appendChild(card);
+              var r = rowRefs[z.id];
+              r.liveTime.textContent = formatTimeHMS(p);
+              r.liveDate.textContent = formatDate(p);
+              r.offset.textContent = getOffsetLabel(z.tz, now);
             });
-
-            var browserNow = new Date();
             browserClock.textContent =
-              String(browserNow.getHours()).padStart(2, "0") + ":" +
-              String(browserNow.getMinutes()).padStart(2, "0") + ":" +
-              String(browserNow.getSeconds()).padStart(2, "0");
+              String(now.getHours()).padStart(2, "0") + ":" +
+              String(now.getMinutes()).padStart(2, "0") + ":" +
+              String(now.getSeconds()).padStart(2, "0");
           }
 
           function populateZoneSelect() {
@@ -1181,9 +1188,16 @@
             zoneSelect.value = "CL";
           }
 
+          function clearConversion() {
+            rowsBox.classList.remove("ch-has-conv");
+            ZONES.forEach(function (z) {
+              rowRefs[z.id].row.classList.remove("ch-source");
+            });
+          }
+
           function renderConversion() {
             if (!dateInput.value || !timeInput.value) {
-              resultsBox.innerHTML = "";
+              clearConversion();
               return;
             }
 
@@ -1215,26 +1229,20 @@
 
             var sourceDayKey = dateInput.value;
 
-            resultsBox.innerHTML = "";
+            rowsBox.classList.add("ch-has-conv");
             ZONES.forEach(function (z) {
               var p = partsFor(z.tz, guess);
               var dayDiff = compareDays(sourceDayKey, p.year + "-" + p.month + "-" + p.day);
+              var r = rowRefs[z.id];
 
-              var box = document.createElement("div");
-              box.className = "ch-result" + (z.id === sourceZone.id ? " ch-source" : "");
+              r.row.classList.toggle("ch-source", z.id === sourceZone.id);
+              r.convTime.innerHTML = formatTimeHM(p) +
+                (z.id === sourceZone.id ? ' <span class="ch-result-tag">ORIGEN</span>' : "");
 
-              var tagHtml = z.id === sourceZone.id ? '<span class="ch-result-tag">ORIGEN</span>' : "";
               var dayShiftHtml = "";
-              if (dayDiff > 0) dayShiftHtml = '<div class="ch-day-shift">+' + dayDiff + " día</div>";
-              if (dayDiff < 0) dayShiftHtml = '<div class="ch-day-shift">' + dayDiff + " día</div>";
-
-              box.innerHTML =
-                '<div class="ch-result-label"><span>' + z.flag + " " + z.country + "</span>" + tagHtml + "</div>" +
-                '<div class="ch-result-time">' + formatTimeHM(p) + "</div>" +
-                '<div class="ch-result-date">' + formatDate(p) + "</div>" +
-                dayShiftHtml;
-
-              resultsBox.appendChild(box);
+              if (dayDiff > 0) dayShiftHtml = '<span class="ch-day-shift">+' + dayDiff + " día</span>";
+              if (dayDiff < 0) dayShiftHtml = '<span class="ch-day-shift">' + dayDiff + " día</span>";
+              r.convDate.innerHTML = formatDate(p) + dayShiftHtml;
             });
           }
 
@@ -1245,11 +1253,10 @@
           }
 
           populateZoneSelect();
-          setInputsToNow();
-          renderLiveCards();
-          renderConversion();
+          buildRows();
+          tick();
 
-          setInterval(renderLiveCards, 1000);
+          setInterval(tick, 1000);
 
           dateInput.addEventListener("change", renderConversion);
           timeInput.addEventListener("change", renderConversion);
@@ -1257,6 +1264,11 @@
           nowBtn.addEventListener("click", function () {
             setInputsToNow();
             renderConversion();
+          });
+          clearBtn.addEventListener("click", function () {
+            dateInput.value = "";
+            timeInput.value = "";
+            clearConversion();
           });
 
           footNote.textContent =
@@ -1622,4 +1634,3 @@ document.addEventListener("keydown",e=>{
 </script>
 </body>
 </html>
-
