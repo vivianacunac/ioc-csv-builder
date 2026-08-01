@@ -549,9 +549,9 @@
       <div class="glass">
         <div class="glass-head"><span class="dot-accent"></span><h3>Datos</h3></div>
         <div class="glass-body">
-          <label>IPs (IPv4) — una por línea</label>
-          <textarea id="fgIps" placeholder="1.2.3.4 5.6.7.8, 9.10.11.12; 104[.]28.212.115&#10;También acepta una por línea o cualquier separador"></textarea>
-          <div class="hint">Acepta cualquier separador (espacio, coma, ; tab, salto de línea) · defang · deduplica y ordena</div>
+          <label>IPs (IPv4) y/o dominios (FQDN) — uno por línea</label>
+          <textarea id="fgIps" placeholder="1.2.3.4 5.6.7.8, 9.10.11.12; 104[.]28.212.115&#10;malicioso[.]com hxxps://evil[.]net/path&#10;También acepta una por línea o cualquier separador"></textarea>
+          <div class="hint">Detecta automáticamente IPs y dominios/URLs (se usa solo el host) · acepta cualquier separador · defang · deduplica y ordena</div>
           <label>Comentario</label>
           <textarea id="fgComment" rows="2" style="min-height:52px" placeholder="CS0026629 - scanning / brute force"></textarea>
           <label>Grupo de bloqueo</label>
@@ -568,7 +568,7 @@
       <div class="glass">
         <div class="glass-head"><span class="dot-accent"></span><h3>Salida CLI</h3></div>
         <div class="glass-body">
-          <div class="output-box" id="fgOut"><span class="empty">Ingresa IPs y genera la salida…</span></div>
+          <div class="output-box" id="fgOut"><span class="empty">Ingresa IPs o dominios y genera la salida…</span></div>
         </div>
       </div>
     </div>
@@ -1421,6 +1421,30 @@ function parseIPs(text){
   return{ips:sortIPs(ips),bad};
 }
 
+/* ═══ FQDN HELPERS ═══ */
+function validFQDN(h){
+  if(!h||h.length>253)return false;
+  return /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i.test(h);
+}
+function hostOf(s){
+  return stripProtoWww(s).split(/[\/:?#]/)[0].toLowerCase();
+}
+
+// Accepts a mix of IPs, bare domains and URLs (only the host is used for FQDN objects)
+function parseIPsAndFQDNs(text){
+  const tokens=pTokens(text),ips=[],fqdns=[],bad=[],seen=new Set();
+  for(const raw of tokens){
+    if(validIP(raw)){
+      const k="ip:"+raw;if(seen.has(k))continue;seen.add(k);ips.push(raw);continue;
+    }
+    const h=hostOf(raw);
+    if(validFQDN(h)){
+      const k="fq:"+h;if(seen.has(k))continue;seen.add(k);fqdns.push(h);
+    }else bad.push(raw);
+  }
+  return{ips:sortIPs(ips),fqdns:sortAlpha(fqdns),bad};
+}
+
 /* ═══ LOG ═══ */
 const LOG_KEY="ioc_suite_log_v2";
 const logBody=document.getElementById("logBody");
@@ -1446,23 +1470,27 @@ document.getElementById("logClear").addEventListener("click",()=>{if(confirm("¿
 const fgIps=document.getElementById("fgIps"),fgComment=document.getElementById("fgComment"),fgGroup=document.getElementById("fgGroup"),
   fgOut=document.getElementById("fgOut"),fgGen=document.getElementById("fgGen"),fgCopy=document.getElementById("fgCopy");
 
-function genFG(ips,comment,group){
+function genFG(ips,fqdns,comment,group){
+  const esc=comment.replaceAll('"','\\"');
   const a=["config firewall address"];
-  for(const ip of ips){const n=objN(ip);a.push(`    edit "${n}"`,`        set subnet ${ip} 255.255.255.255`,`        set comment "${comment.replaceAll('"','\\"')}"`,`    next`)}
+  for(const ip of ips){const n=objN(ip);a.push(`    edit "${n}"`,`        set subnet ${ip} 255.255.255.255`,`        set comment "${esc}"`,`    next`)}
+  for(const h of fqdns){const n=objN(h);a.push(`    edit "${n}"`,`        set type fqdn`,`        set fqdn "${h}"`,`        set comment "${esc}"`,`    next`)}
   a.push("end","","config firewall addrgrp",`    edit "${group}"`);
   for(const ip of ips)a.push(`        append member "${objN(ip)}"`);
+  for(const h of fqdns)a.push(`        append member "${objN(h)}"`);
   a.push("    next","end");return a.join("\n");
 }
 fgGen.addEventListener("click",()=>{
   try{
-    const{ips,bad}=parseIPs(fgIps.value);
+    const{ips,fqdns,bad}=parseIPsAndFQDNs(fgIps.value);
     const c=(fgComment.value||"").trim(),g=(fgGroup.value||"").trim();
-    if(!ips.length)throw new Error("No hay IPs válidas.");
+    if(!ips.length&&!fqdns.length)throw new Error("No hay IPs ni dominios válidos.");
     if(!c||!g)throw new Error("Falta comentario o grupo.");
     if(bad.length)toast("warn","Aviso",`Ignoradas: ${bad.slice(0,4).join(", ")}${bad.length>4?" …":""}`);
-    fgOut.textContent=genFG(ips,c,g);fgOut.classList.remove("fresh");void fgOut.offsetWidth;fgOut.classList.add("fresh");
-    fgCopy.disabled=false;toast("ok","Generado",`${ips.length} IPs.`);
+    fgOut.textContent=genFG(ips,fqdns,c,g);fgOut.classList.remove("fresh");void fgOut.offsetWidth;fgOut.classList.add("fresh");
+    fgCopy.disabled=false;toast("ok","Generado",`${ips.length} IPs, ${fqdns.length} dominios.`);
     ips.forEach(ip=>addLog({vendor:"fortigate",type:"IP",ioc:ip,group:g,comment:c}));
+    fqdns.forEach(h=>addLog({vendor:"fortigate",type:"FQDN",ioc:h,group:g,comment:c}));
   }catch(e){fgOut.innerHTML='<span class="empty">—</span>';fgCopy.disabled=true;toast("bad","Error",e.message)}
 });
 fgCopy.addEventListener("click",()=>clip(fgOut.textContent));
